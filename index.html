@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard Pro</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-dark: #7c3aed;
+            --secondary: #ec4899;
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass: blur(12px);
+
+            /* Status Colors */
+            --status-done: #10b981;
+            --status-wip: #3b82f6;
+            --status-blocked: #ef4444;
+            --status-pending: #f59e0b;
+            --status-cancelled: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .project-info {
+            flex: 1;
+        }
+
+        .project-info h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 2rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .meta-item strong {
+            color: var(--text-main);
+        }
+
+        /* Project Selector */
+        .project-selector-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        select.project-select {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+            min-width: 200px;
+        }
+
+        select.project-select:hover {
+            border-color: var(--primary);
+        }
+
+        /* Upload Zone */
+        .upload-area {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass);
+            border: 2px dashed var(--border);
+            border-radius: 1rem;
+            padding: 4rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: none;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .summary-card {
+            grid-column: span 3;
+        }
+
+        .chart-card {
+            grid-column: span 6;
+            min-height: 350px;
+        }
+
+        .full-width {
+            grid-column: span 12;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Table */
+        .timeline-container {
+            overflow-x: auto;
+            max-height: 600px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-muted);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(4px);
+            z-index: 10;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-concluido {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--status-done);
+            border: 1px solid var(--status-done);
+        }
+
+        .status-em-andamento {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--status-wip);
+            border: 1px solid var(--status-wip);
+        }
+
+        .status-bloqueado {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--status-blocked);
+            border: 1px solid var(--status-blocked);
+        }
+
+        .status-pendente {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--status-pending);
+            border: 1px solid var(--status-pending);
+        }
+
+        .status-cancelado {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--status-cancelled);
+            border: 1px solid var(--status-cancelled);
+        }
+
+        .status-unknown {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+        }
+
+        .progress-bar-bg {
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        @media (max-width: 1024px) {
+            .summary-card {
+                grid-column: span 6;
+            }
+
+            .chart-card {
+                grid-column: span 12;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .summary-card {
+                grid-column: span 12;
+            }
+
+            .project-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <div class="project-info">
+                <h1 id="projectTitle">Dashboard de Projeto</h1>
+                <div class="project-meta">
+                    <div class="meta-item" id="projectSquad"></div>
+                    <div class="meta-item" id="projectBenefit"></div>
+                </div>
+            </div>
+
+            <div class="project-selector-container" id="projectSelectorContainer" style="display: none;">
+                <select id="projectSelect" class="project-select" onchange="switchProject(this.value)">
+                    <!-- Options injected via JS -->
+                </select>
+                <button class="btn" onclick="location.reload()"
+                    style="margin-top: 0; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    Novo Arquivo
+                </button>
+            </div>
+        </header>
+
+        <div id="uploadZone" class="upload-area">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+            <h2>Arraste sua Planilha de Projeto</h2>
+            <p style="color: var(--text-muted); margin: 1rem 0;">Suporta múltiplas abas de projetos</p>
+            <button class="btn" onclick="document.getElementById('fileInput').click()">Selecionar Arquivo</button>
+            <input type="file" id="fileInput" accept=".xlsx, .xls" onchange="handleFile(this.files[0])">
+            <p id="errorMsg" style="color: var(--secondary); margin-top: 1rem; display: none;"></p>
+        </div>
+
+        <div id="dashboard" class="dashboard">
+            <!-- Summary Cards -->
+            <div class="card summary-card">
+                <div class="stat-label">Total de Tarefas</div>
+                <div class="stat-value" id="totalTasks">0</div>
+            </div>
+            <div class="card summary-card">
+                <div class="stat-label">Concluídas</div>
+                <div class="stat-value" id="completedTasks" style="color: var(--status-done)">0</div>
+            </div>
+            <div class="card summary-card">
+                <div class="stat-label">Em Andamento</div>
+                <div class="stat-value" id="wipTasks" style="color: var(--status-wip)">0</div>
+            </div>
+            <div class="card summary-card">
+                <div class="stat-label">Bloqueadas</div>
+                <div class="stat-value" id="blockedTasks" style="color: var(--status-blocked)">0</div>
+            </div>
+
+            <!-- Charts -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <div class="card-title">Status das Tarefas</div>
+                </div>
+                <div style="position: relative; height: 100%; width: 100%;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header">
+                    <div class="card-title">Progresso por Etapa</div>
+                </div>
+                <div style="position: relative; height: 100%; width: 100%;">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Task List -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <div class="card-title">Cronograma Detalhado</div>
+                </div>
+                <div class="timeline-container">
+                    <table id="taskTable">
+                        <thead>
+                            <tr>
+                                <th>Tarefa</th>
+                                <th>Início</th>
+                                <th>Fim</th>
+                                <th>Status</th>
+                                <th>Progresso</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Global State ---
+        let projects = [];
+        let charts = [];
+
+        // --- Status Mapping ---
+        const STATUS_MAP = {
+            'a': { label: 'Concluído', class: 'status-concluido', color: '#10b981' },
+            'q': { label: 'Em andamento', class: 'status-em-andamento', color: '#3b82f6' },
+            'x': { label: 'Bloqueado', class: 'status-bloqueado', color: '#ef4444' },
+            ';': { label: 'Pendente', class: 'status-pendente', color: '#f59e0b' },
+            'r': { label: 'Cancelado', class: 'status-cancelado', color: '#64748b' }
+        };
+
+        function getStatus(code) {
+            const normalized = (code || '').toString().toLowerCase().trim();
+            return STATUS_MAP[normalized] || { label: normalized || 'Pendente', class: 'status-unknown', color: '#94a3b8' };
+        }
+
+        // --- Drag & Drop ---
+        const uploadZone = document.getElementById('uploadZone');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+        });
+        uploadZone.addEventListener('dragover', () => uploadZone.classList.add('dragover'));
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+        uploadZone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
+
+        // --- Main Logic ---
+        async function handleFile(file) {
+            if (!file) return;
+
+            try {
+                const data = await file.arrayBuffer();
+                const workbook = XLSX.read(data, { cellDates: true });
+
+                projects = []; // Reset
+
+                // Iterate all sheets
+                workbook.SheetNames.forEach(sheetName => {
+                    const sheet = workbook.Sheets[sheetName];
+                    const project = parseProject(sheet, sheetName);
+                    if (project) {
+                        projects.push(project);
+                    }
+                });
+
+                if (projects.length === 0) throw new Error("Nenhum projeto válido encontrado. Verifique se as abas seguem o padrão.");
+
+                // Setup UI
+                setupProjectSelector();
+                renderDashboard(0); // Render first project
+
+                // Switch Views
+                document.getElementById('uploadZone').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'grid';
+                document.getElementById('projectSelectorContainer').style.display = 'flex';
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('errorMsg').textContent = "Erro: " + err.message;
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+
+        function parseProject(sheet, sheetName) {
+            // 1. Validation: Check for "TAREFA" header to confirm it's a project sheet
+            // We scan first 20 rows for a cell containing "TAREFA"
+            let headerRow = -1;
+            const range = XLSX.utils.decode_range(sheet['!ref']);
+
+            for (let R = range.s.r; R <= Math.min(range.e.r, 20); ++R) {
+                const cell = sheet[XLSX.utils.encode_cell({ r: R, c: 2 })]; // Column C usually has "TAREFA"
+                if (cell && (cell.v === 'TAREFA' || cell.v === 'Tarefa')) {
+                    headerRow = R;
+                    break;
+                }
+            }
+
+            if (headerRow === -1) {
+                console.warn(`Skipping sheet '${sheetName}': No 'TAREFA' header found.`);
+                return null;
+            }
+
+            // 2. Extract Metadata
+            const projectTitle = extractCell(sheet, 'C2') || sheetName;
+            const squad = extractCell(sheet, 'I1') || "N/A";
+            const benefit = extractCell(sheet, 'C6') || "N/A";
+
+            // 3. Parse Tasks
+            const tasks = [];
+            for (let R = headerRow + 1; R <= range.e.r; ++R) {
+                const taskName = extractCell(sheet, XLSX.utils.encode_cell({ r: R, c: 2 })); // Col C
+                if (!taskName) continue;
+
+                const startDate = extractCell(sheet, XLSX.utils.encode_cell({ r: R, c: 3 })); // Col D
+                const endDate = extractCell(sheet, XLSX.utils.encode_cell({ r: R, c: 4 })); // Col E
+                const statusCode = extractCell(sheet, XLSX.utils.encode_cell({ r: R, c: 6 })); // Col G
+                const progressVal = extractCell(sheet, XLSX.utils.encode_cell({ r: R, c: 7 })); // Col H
+
+                tasks.push({
+                    name: taskName,
+                    start: formatDate(startDate),
+                    end: formatDate(endDate),
+                    status: getStatus(statusCode),
+                    progress: parseProgress(progressVal)
+                });
+            }
+
+            if (tasks.length === 0) return null;
+
+            return {
+                id: sheetName,
+                title: projectTitle,
+                squad: squad,
+                benefit: benefit,
+                tasks: tasks
+            };
+        }
+
+        function setupProjectSelector() {
+            const select = document.getElementById('projectSelect');
+            select.innerHTML = projects.map((p, index) =>
+                `<option value="${index}">${p.title} (${p.id})</option>`
+            ).join('');
+        }
+
+        function switchProject(index) {
+            renderDashboard(parseInt(index));
+        }
+
+        function renderDashboard(projectIndex) {
+            const project = projects[projectIndex];
+            if (!project) return;
+
+            // Update Header
+            document.getElementById('projectTitle').textContent = project.title;
+            document.getElementById('projectSquad').innerHTML = `<strong>Squad:</strong> ${project.squad}`;
+            document.getElementById('projectBenefit').innerHTML = `<strong>Benefício:</strong> ${project.benefit}`;
+
+            const tasks = project.tasks;
+
+            // 1. KPIs
+            document.getElementById('totalTasks').textContent = tasks.length;
+            document.getElementById('completedTasks').textContent = tasks.filter(t => t.status.label === 'Concluído').length;
+            document.getElementById('wipTasks').textContent = tasks.filter(t => t.status.label === 'Em andamento').length;
+            document.getElementById('blockedTasks').textContent = tasks.filter(t => t.status.label === 'Bloqueado').length;
+
+            // 2. Charts
+            if (charts.length > 0) {
+                charts.forEach(c => c.destroy());
+                charts = [];
+            }
+            renderStatusChart(tasks);
+            renderProgressChart(tasks);
+
+            // 3. Table
+            const tbody = document.querySelector('#taskTable tbody');
+            tbody.innerHTML = tasks.map(t => `
+                <tr>
+                    <td>${t.name}</td>
+                    <td>${t.start}</td>
+                    <td>${t.end}</td>
+                    <td><span class="badge ${t.status.class}">${t.status.label}</span></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: ${t.progress}%"></div>
+                            </div>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">${t.progress}%</span>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // --- Helpers ---
+        function extractCell(sheet, address) {
+            const cell = sheet[address];
+            return cell ? cell.v : null;
+        }
+
+        function formatDate(val) {
+            if (val instanceof Date) return val.toLocaleDateString('pt-BR');
+            if (typeof val === 'number') {
+                const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+                return date.toLocaleDateString('pt-BR');
+            }
+            return val || '-';
+        }
+
+        function parseProgress(val) {
+            if (typeof val === 'number') return Math.round(val * 100);
+            if (typeof val === 'string' && val.includes('%')) return parseInt(val.replace('%', ''));
+            return 0;
+        }
+
+        function renderStatusChart(tasks) {
+            const counts = {};
+            tasks.forEach(t => {
+                counts[t.status.label] = (counts[t.status.label] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            charts.push(new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        data: Object.values(counts),
+                        backgroundColor: Object.keys(counts).map(k => {
+                            const s = Object.values(STATUS_MAP).find(v => v.label === k);
+                            return s ? s.color : '#94a3b8';
+                        }),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#94a3b8' } }
+                    }
+                }
+            }));
+        }
+
+        function renderProgressChart(tasks) {
+            const topTasks = tasks.slice(0, 10);
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            charts.push(new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: topTasks.map(t => t.name.length > 20 ? t.name.substr(0, 20) + '...' : t.name),
+                    datasets: [{
+                        label: 'Progresso (%)',
+                        data: topTasks.map(t => t.progress),
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            }));
+        }
+    </script>
+</body>
+
+</html>
