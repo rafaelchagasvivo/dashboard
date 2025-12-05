@@ -1,34 +1,70 @@
-export type Status = 'Concluído' | 'Em Andamento' | 'Atrasado' | 'Bloqueado' | 'Pendente' | 'Cancelado';
 
-export interface Task {
+export type ProjectStatus = 'Concluído' | 'Em Andamento' | 'Atrasado' | 'Cancelado' | 'Não Iniciado';
+export type Theme = 'light' | 'dark' | 'vivo';
+
+export interface RawProjectRow {
+    [key: string]: any;
+}
+
+export interface TaskData {
+    name: string;
+    startDate: number | null;  // Timestamp
+    plannedEnd: number | null; // Timestamp
+    actualEnd: number | null;  // Timestamp
+    duration: number;          // Dias
+    progress: number;          // 0-100
+}
+
+export interface ProjectData {
     id: string;
     name: string;
-    start: Date | null;
-    end: Date | null;
-    duration: number;
-    status: Status;
-    progress: number;
-    etapa?: string;
+    description?: string;      // New field
+    startDate: Date | null;    // Data Inicio Real do Projeto
+    baselineDate: Date | null; // Data Fim Planejada do Projeto
+    actualDate: Date | null;   // Data Fim Real do Projeto
+    status: ProjectStatus;
+    saving: number;
+    tasks: TaskData[];         // Lista de tarefas para Burnup granular
+    stageDurations: Record<string, number>; // Ex: { "Discovery": 5, "Delivery": 2 }
+
+    // Novos campos de equipe
+    factory?: string;
+    squad?: string;
+    architect?: string;
+    analyst?: string;
+    developer?: string;
+    technology?: string;
+    burnupData?: BurnupRow[];
 }
 
-export interface Team {
-    squad: string;
-    fabrica: string;
-    arq: string;
-    af: string;
-    dev: string;
+export interface BurnupRow {
+    date: Date;
+    baseline: number;
+    realized: number | null;
+    forecast?: number | null;
+    totalScope?: number;
 }
 
-export interface Project {
-    id: string;
-    title: string;
-    description?: string;
-    benefit: string; // Saving
-    team: Team;
-    tasks: Task[];
-    // Computed
-    status: Status; // Project level status
-    progress: number;
-    startDate: Date | null;
-    endDate: Date | null;
+export interface DashboardMetrics {
+    totalSaving: number;
+    totalProjects: number;
+    statusDistribution: Record<ProjectStatus, number>;
+    completionRate: number;
+    avgDelayDays: number;
+}
+
+export interface BurnupPoint {
+    date: string;
+    displayDate: string;
+    baselineScope: number; // Cumulativo Planejado
+    actualCompleted: number; // Cumulativo Realizado
+    forecast: number | null; // Tendência
+    totalScope: number; // Linha de teto
+}
+
+export interface FilterState {
+    searchTerm: string;
+    statusFilter: ProjectStatus | 'Todos';
+    projectFilter: string;
+    squadFilter: string; // 'Todos' ou o nome da Squad
 }

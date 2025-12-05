@@ -1,65 +1,104 @@
-import { DollarSign, FolderKanban, CheckCircle, AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { DollarSign, LayoutList, TrendingUp, AlertTriangle, CheckCircle2, HelpCircle } from 'lucide-react';
+import type { DashboardMetrics, Theme } from '../types';
+import clsx from 'clsx';
 
 interface KPICardsProps {
-    kpis: {
-        totalProjects: number;
-        totalSaving: number;
-        completed: number;
-        delayed: number;
-        completionRate: number;
-    };
+    metrics: DashboardMetrics;
+    theme: Theme;
 }
 
-export function KPICards({ kpis }: KPICardsProps) {
-    const cards = [
-        {
-            label: 'Saving Total',
-            value: kpis.totalSaving.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-            icon: DollarSign,
-            color: 'text-vivo-green',
-            bg: 'bg-vivo-green/10'
-        },
-        {
-            label: 'Portfólio',
-            value: kpis.totalProjects,
-            sub: `${kpis.completionRate}% Concluído`,
-            icon: FolderKanban,
-            color: 'text-vivo-purple',
-            bg: 'bg-vivo-purple/10'
-        },
-        {
-            label: 'Concluídos',
-            value: kpis.completed,
-            icon: CheckCircle,
-            color: 'text-blue-500',
-            bg: 'bg-blue-500/10'
-        },
-        {
-            label: 'Atenção',
-            value: kpis.delayed,
-            sub: 'Projetos Atrasados',
-            icon: AlertTriangle,
-            color: 'text-vivo-orange',
-            bg: 'bg-vivo-orange/10'
-        }
-    ];
+export const KPICards: React.FC<KPICardsProps> = ({ metrics, theme }) => {
+    const formatCurrency = (val: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+    };
+
+    const isVivo = theme === 'vivo';
+
+    // Helper to get card base classes
+    const cardClasses = clsx(
+        "p-5 rounded-xl shadow-sm border relative overflow-hidden group transition-colors",
+        isVivo
+            ? "bg-vivo-roxo border-vivo-lilas/20 hover:border-vivo-lilas/50"
+            : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+    );
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {cards.map((card, idx) => (
-                <div key={idx} className="bg-card-bg border border-border-color p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <p className="text-text-primary/60 text-sm font-medium uppercase tracking-wider mb-1">{card.label}</p>
-                            <h3 className="text-3xl font-bold">{card.value}</h3>
-                            {card.sub && <p className="text-xs text-text-primary/40 mt-1">{card.sub}</p>}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {/* Total Saving */}
+            <div className={cardClasses}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <DollarSign className={clsx("w-16 h-16", isVivo ? "text-vivo-menta" : "text-emerald-600 dark:text-emerald-500")} />
+                </div>
+                <div className="flex flex-col relative z-10">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <h4 className={clsx("text-sm font-semibold uppercase tracking-wide", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>
+                                Total Benefício
+                            </h4>
+                            <div className="relative group">
+                                <HelpCircle className={clsx("w-3 h-3 cursor-help", isVivo ? "text-vivo-lilas/60" : "text-slate-400")} />
+                                <div className={clsx(
+                                    "absolute left-0 top-5 w-48 p-2 rounded-lg shadow-lg text-[10px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50",
+                                    isVivo ? "bg-vivo-roxo-escuro border border-vivo-lilas text-white" : "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+                                )}>
+                                    Soma de todos os benefícios financeiros dos projetos
+                                </div>
+                            </div>
                         </div>
-                        <div className={`p-3 rounded-lg ${card.bg} ${card.color}`}>
-                            <card.icon size={24} />
-                        </div>
+                        <TrendingUp className={clsx("w-8 h-8", isVivo ? "text-vivo-menta" : "text-emerald-500")} />
+                    </div>
+                    <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>{formatCurrency(metrics.totalSaving)}</span>
+                    <div className={clsx("flex items-center gap-1 mt-2 text-xs font-medium", isVivo ? "text-vivo-menta" : "text-emerald-600 dark:text-emerald-400")}>
+                        <TrendingUp className="w-3 h-3" />
+                        <span>Acumulado</span>
                     </div>
                 </div>
-            ))}
+            </div>
+
+            {/* Projetos Totais */}
+            <div className={cardClasses}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <LayoutList className={clsx("w-16 h-16", isVivo ? "text-vivo-rosa" : "text-brand-600 dark:text-brand-500")} />
+                </div>
+                <div className="flex flex-col relative z-10">
+                    <span className={clsx("text-xs uppercase font-bold tracking-wider", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Portfólio</span>
+                    <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>{metrics.totalProjects}</span>
+                    <span className={clsx("text-xs mt-2", isVivo ? "text-white/60" : "text-slate-400 dark:text-slate-500")}>Projetos monitorados</span>
+                </div>
+            </div>
+
+            {/* Taxa de Conclusão */}
+            <div className={cardClasses}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <CheckCircle2 className={clsx("w-16 h-16", isVivo ? "text-vivo-lilas" : "text-blue-600 dark:text-blue-500")} />
+                </div>
+                <div className="flex flex-col relative z-10">
+                    <span className={clsx("text-xs uppercase font-bold tracking-wider", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Conclusão</span>
+                    <div className="flex items-baseline gap-2">
+                        <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>{metrics.completionRate.toFixed(1)}%</span>
+                        <span className={clsx("text-xs", isVivo ? "text-white/60" : "text-slate-500")}>do total</span>
+                    </div>
+                    <div className={clsx("w-full h-1.5 rounded-full mt-3", isVivo ? "bg-white/10" : "bg-slate-100 dark:bg-slate-700")}>
+                        <div
+                            className={clsx("h-1.5 rounded-full transition-all duration-500", isVivo ? "bg-vivo-lilas" : "bg-blue-500 dark:bg-blue-400")}
+                            style={{ width: `${metrics.completionRate}%` }}
+                        ></div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Atrasados */}
+            <div className={cardClasses}>
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <AlertTriangle className={clsx("w-16 h-16", isVivo ? "text-vivo-laranja" : "text-red-600 dark:text-red-500")} />
+                </div>
+                <div className="flex flex-col relative z-10">
+                    <span className={clsx("text-xs uppercase font-bold tracking-wider", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Atenção</span>
+                    <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-vivo-laranja" : "text-red-600 dark:text-red-400")}>{metrics.statusDistribution['Atrasado'] || 0}</span>
+                    <span className={clsx("text-xs mt-2 font-medium", isVivo ? "text-vivo-laranja/80" : "text-red-600/80 dark:text-red-400/80")}>Projetos em atraso</span>
+                </div>
+            </div>
         </div>
     );
-}
+};

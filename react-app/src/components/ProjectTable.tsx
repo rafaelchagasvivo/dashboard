@@ -1,25 +1,48 @@
-import type { Project, Status } from '../types';
+
+import React from 'react';
+import type { ProjectData, Theme } from '../types';
+import { format } from 'date-fns';
 import clsx from 'clsx';
 
+
 interface ProjectTableProps {
-    projects: Project[];
+    projects: ProjectData[];
+    theme: Theme;
 }
 
-const statusColors: Record<Status, string> = {
-    'Concluído': 'bg-green-500/20 text-green-500 border-green-500/50',
-    'Em Andamento': 'bg-blue-500/20 text-blue-500 border-blue-500/50',
-    'Atrasado': 'bg-red-500/20 text-red-500 border-red-500/50',
-    'Bloqueado': 'bg-red-500/20 text-red-500 border-red-500/50',
-    'Pendente': 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50',
-    'Cancelado': 'bg-slate-500/20 text-slate-500 border-slate-500/50',
-};
+export const ProjectTable: React.FC<ProjectTableProps> = ({ projects: data, theme }) => {
+    const isVivo = theme === 'vivo';
 
-export function ProjectTable({ projects }: ProjectTableProps) {
+    const getStatusBadge = (status: string) => {
+        if (isVivo) {
+            switch (status) {
+                case 'Concluído': return 'bg-vivo-menta text-vivo-roxo';
+                case 'Atrasado': return 'bg-vivo-laranja text-vivo-roxo';
+                case 'Em Andamento': return 'bg-vivo-lilas text-white';
+                default: return 'bg-white/20 text-white';
+            }
+        }
+        return clsx(
+            "px-2 py-1 rounded-full text-xs font-semibold",
+            status === 'Concluído' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' :
+                status === 'Atrasado' ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400' :
+                    status === 'Em Andamento' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400' :
+                        'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+        );
+    };
+
     return (
-        <div className="bg-card-bg border border-border-color rounded-xl overflow-hidden shadow-sm">
+        <div className={clsx(
+            "rounded-xl shadow-sm border overflow-hidden transition-colors",
+            isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+        )}>
+            <div className={clsx("p-6 border-b", isVivo ? "border-vivo-lilas/20" : "border-slate-100 dark:border-slate-700")}>
+                <h3 className={clsx("text-lg font-bold", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>Detalhamento</h3>
+            </div>
+
             <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                    <thead className="bg-black/5 dark:bg-white/5 text-text-primary/60 uppercase text-xs font-semibold">
+                <table className={clsx("w-full text-left text-sm", isVivo ? "text-white/80" : "text-slate-600 dark:text-slate-400")}>
+                    <thead className={clsx("font-semibold uppercase text-xs tracking-wider", isVivo ? "bg-vivo-lilas/10 text-vivo-lilas" : "bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400")}>
                         <tr>
                             <th className="px-6 py-4">Projeto</th>
                             <th className="px-6 py-4">Descrição</th>
@@ -30,41 +53,92 @@ export function ProjectTable({ projects }: ProjectTableProps) {
                             <th className="px-6 py-4 text-right">Saving (R$)</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-border-color">
-                        {projects.map((p) => (
-                            <tr key={p.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                                <td className="px-6 py-4 font-bold text-text-primary">{p.title}</td>
-                                <td className="px-6 py-4 text-xs text-text-primary/60 max-w-[200px]">
-                                    {p.description || 'Sem descrição disponível'}
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex flex-col gap-1">
-                                        <span className="text-xs font-bold text-vivo-purple">{p.team.fabrica}</span>
-                                        <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-[10px] w-fit border border-gray-200 dark:border-gray-700">
-                                            {p.team.squad}
-                                        </span>
-                                        <div className="text-[10px] text-text-primary/50 mt-1">
-                                            <div>Dev: {p.team.dev}</div>
-                                            <div>AF: {p.team.af}</div>
-                                            <div>Arq: {p.team.arq}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 text-sm font-medium">{p.startDate?.toLocaleDateString('pt-BR') || '-'}</td>
-                                <td className="px-6 py-4 text-sm text-text-primary/60">-</td> {/* Data Real not in excel usually, using placeholder or end date */}
-                                <td className="px-6 py-4">
-                                    <span className={clsx("px-3 py-1 rounded-full text-xs font-bold border", statusColors[p.status])}>
-                                        {p.status}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 font-mono text-right font-bold text-text-primary">
-                                    {p.benefit}
-                                </td>
+                    <tbody className={clsx("divide-y", isVivo ? "divide-vivo-lilas/10" : "divide-slate-100 dark:divide-slate-700")}>
+                        {data.length === 0 ? (
+                            <tr>
+                                <td colSpan={7} className="px-6 py-8 text-center opacity-50">Nenhum dado encontrado com os filtros atuais.</td>
                             </tr>
-                        ))}
+                        ) : (
+                            data.map((project) => (
+                                <tr key={project.id} className={clsx("transition-colors", isVivo ? "hover:bg-white/5" : "hover:bg-slate-50 dark:hover:bg-slate-700/30")}>
+                                    <td className={clsx("px-6 py-4 font-medium", isVivo ? "text-white" : "text-slate-800 dark:text-slate-200")}>
+                                        {project.name}
+                                    </td>
+                                    <td className="px-6 py-4 max-w-xs">
+                                        {project.description ? (
+                                            <span className="text-xs opacity-80 line-clamp-2" title={project.description}>
+                                                {project.description}
+                                            </span>
+                                        ) : (
+                                            <span className="opacity-30 text-xs">-</span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col gap-1 text-xs">
+                                            {/* Squad e Fábrica */}
+                                            <div className="flex items-center gap-2 mb-1">
+                                                {project.factory && (
+                                                    <span className={clsx("font-semibold", isVivo ? "text-vivo-lilas" : "text-brand-600 dark:text-brand-400")}>
+                                                        {project.factory}
+                                                    </span>
+                                                )}
+                                                {project.squad && (
+                                                    <span className={clsx("px-1.5 py-0.5 rounded text-[10px] uppercase font-bold", isVivo ? "bg-vivo-rosa/20 text-vivo-rosa" : "bg-slate-200 text-slate-700 dark:bg-slate-600 dark:text-slate-300")}>
+                                                        {project.squad}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Lista de Membros */}
+                                            <div className="flex flex-col gap-0.5 opacity-80">
+                                                {project.developer && (
+                                                    <div className="flex gap-1">
+                                                        <span className={clsx("font-bold w-8", isVivo ? "text-vivo-menta" : "text-slate-500")}>Dev:</span>
+                                                        <span>{project.developer}</span>
+                                                    </div>
+                                                )}
+                                                {project.analyst && (
+                                                    <div className="flex gap-1">
+                                                        <span className={clsx("font-bold w-8", isVivo ? "text-vivo-menta" : "text-slate-500")}>AF:</span>
+                                                        <span>{project.analyst}</span>
+                                                    </div>
+                                                )}
+                                                {project.architect && (
+                                                    <div className="flex gap-1">
+                                                        <span className={clsx("font-bold w-8", isVivo ? "text-vivo-menta" : "text-slate-500")}>Arq:</span>
+                                                        <span>{project.architect}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {(!project.factory && !project.squad && !project.developer && !project.analyst && !project.architect) && (
+                                                <span className="opacity-30">-</span>
+                                            )}
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {project.baselineDate ? format(project.baselineDate, 'dd/MM/yyyy') : '-'}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {project.actualDate ? format(project.actualDate, 'dd/MM/yyyy') : '-'}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <span className={clsx("px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap", getStatusBadge(project.status))}>
+                                            {project.status}
+                                        </span>
+                                    </td>
+                                    <td className={clsx("px-6 py-4 text-right font-mono", isVivo ? "text-white" : "text-slate-700 dark:text-slate-300")}>
+                                        {project.saving.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                    </td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
+            <div className={clsx("px-6 py-3 border-t text-xs text-right", isVivo ? "bg-white/5 border-vivo-lilas/20 text-white/50" : "bg-slate-50 dark:bg-slate-700/50 border-slate-100 dark:border-slate-700 text-slate-400")}>
+                Exibindo {data.length} registros
+            </div>
         </div>
     );
-}
+};

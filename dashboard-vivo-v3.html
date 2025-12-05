@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Vivo - v3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'vivo-roxo-escuro': '#1a0033',
+                        'vivo-roxo': '#380054',
+                        'vivo-lilas': '#BD4AFF',
+                        'vivo-menta': '#B2D682',
+                        'vivo-laranja': '#FF9900',
+                        'vivo-rosa': '#EB3C7D',
+                        'brand-600': '#5a3e8d',
+                    }
+                }
+            }
+        }
+    </script>
+    <script>
+        function loadScript(src, callback) {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = callback;
+            document.head.appendChild(script);
+        }
+
+        function run() {
+            loadScript("https://unpkg.com/react@18/umd/react.development.js", () => {
+                loadScript("https://unpkg.com/react-dom@18/umd/react-dom.development.js", () => {
+                    loadScript("https://unpkg.com/babel-standalone@6/babel.min.js", () => {
+                        loadScript("https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js", () => {
+                             loadScript("https://unpkg.com/clsx@2.1.1/dist/clsx.min.js", () => {
+                                loadScript("https://unpkg.com/date-fns@3.6.0/cdn.js", () => {
+                                    loadScript("https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js", () => {
+                                        try {
+                                            const script = document.getElementById('main-script').innerHTML;
+                                            const transformedScript = Babel.transform(script, { presets: ['react', 'es2015'] }).code;
+                                            const newScript = document.createElement('script');
+                                            newScript.innerHTML = transformedScript;
+                                            document.body.appendChild(newScript);
+                                        } catch (error) {
+                                            console.error("Erro ao transpilar ou executar o script:", error);
+                                        }
+                                    });
+                                });
+                             });
+                        });
+                    });
+                });
+            });
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        body { font-family: sans-serif; }
+    </style>
+</head>
+<body class="bg-vivo-roxo-escuro" onload="run()">
+    <div id="root"></div>
+
+    <script id="main-script" type="text/babel-deferred">
+        const { useState, useMemo, useRef, useEffect } = React;
+        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine, BarChart, Bar, Cell, LabelList } = Recharts;
+        const { format, isAfter, isBefore, eachMonthOfInterval, addMonths } = dateFns;
+
+        const Search = () => '[S]';
+        const Filter = () => '[F]';
+        const LogOut = () => '[L]';
+        const Sun = () => '[Sun]';
+        const Moon = () => '[Moon]';
+        const Sparkles = () => '[✨]';
+        const FolderOpen = () => '[FO]';
+        const PlusCircle = () => '[+]';
+        const Loader2 = () => <div className="animate-spin">[L]</div>;
+        const LayoutDashboard = () => '[D]';
+        const Users = () => '[U]';
+        const DollarSign = () => '[$]';
+        const LayoutList = () => '[LL]';
+        const TrendingUp = () => '[T]';
+        const AlertTriangle = () => '[!]';
+        const CheckCircle2 = () => '[C]';
+        
+        const parseExcelFile = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = e.target.result;
+                        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                        const sheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[sheetName];
+                        const json = XLSX.utils.sheet_to_json(worksheet);
+                        resolve(json.map((row, index) => ({
+                            id: row.ID || `proj-${index}`,
+                            name: row.Projeto || 'Nome Indefinido',
+                            description: row.Descricao || '',
+                            squad: row.Squad || 'N/A',
+                            factory: row.Fabrica || '',
+                            developer: row.Desenvolvedor || '',
+                            analyst: row.Analista || '',
+                            architect: row.Arquiteto || '',
+                            startDate: row['Data Início'],
+                            baselineDate: row['Data Base'],
+                            actualDate: row['Data Real'],
+                            status: row.Status || 'Pendente',
+                            saving: typeof row.Saving === 'number' ? row.Saving : 0,
+                            tasks: [],
+                            stageDurations: {
+                                'Discovery': Math.random() * 10,
+                                'Desenvolvimento': Math.random() * 50,
+                                'Homologação': Math.random() * 20,
+                            }
+                        })));
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        };
+
+        const KPICards = ({ metrics, theme }) => {
+          const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+          const isVivo = theme === 'vivo';
+          const cardClasses = clsx("p-5 rounded-xl shadow-sm border relative overflow-hidden group transition-colors", isVivo ? "bg-vivo-roxo border-vivo-lilas/20 hover:border-vivo-lilas/50" : "bg-white");
+
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className={cardClasses}><div className="opacity-10 absolute top-0 right-0 p-4"><DollarSign /></div> <div><span className={clsx("text-xs uppercase font-bold", isVivo && "text-vivo-lilas")}>Saving Total</span> <span className={clsx("text-2xl font-bold mt-1", isVivo && "text-white")}>{formatCurrency(metrics.totalSaving)}</span></div></div>
+              <div className={cardClasses}><div className="opacity-10 absolute top-0 right-0 p-4"><LayoutList /></div> <div><span className={clsx("text-xs uppercase font-bold", isVivo && "text-vivo-lilas")}>Portfólio</span> <span className={clsx("text-2xl font-bold mt-1", isVivo && "text-white")}>{metrics.totalProjects}</span></div></div>
+              <div className={cardClasses}><div className="opacity-10 absolute top-0 right-0 p-4"><CheckCircle2 /></div> <div><span className={clsx("text-xs uppercase font-bold", isVivo && "text-vivo-lilas")}>Conclusão</span> <span className={clsx("text-2xl font-bold mt-1", isVivo && "text-white")}>{metrics.completionRate.toFixed(1)}%</span><div className={clsx("w-full h-1.5 rounded-full mt-3", isVivo ? "bg-white/10" : "bg-slate-100")}><div className={clsx("h-1.5 rounded-full", isVivo ? "bg-vivo-lilas" : "bg-blue-500")} style={{ width: `${metrics.completionRate}%` }}></div></div></div></div>
+              <div className={cardClasses}><div className="opacity-10 absolute top-0 right-0 p-4"><AlertTriangle /></div> <div><span className={clsx("text-xs uppercase font-bold", isVivo && "text-vivo-lilas")}>Atenção</span> <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-vivo-laranja" : "text-red-600")}>{metrics.statusDistribution['Atrasado'] || 0}</span></div></div>
+            </div>
+          );
+        };
+        
+        const BurnupChart = ({ data, theme }) => {
+            const chartData = useMemo(() => {
+                if (data.length === 0) return [];
+                const allTasks = data.flatMap(p => p.tasks || []);
+                if (allTasks.length === 0) return [{ displayDate: 'N/A', baseline: 0, realized: 0, total: 0 }];
+        
+                const timestamps = allTasks.flatMap(t => [t.plannedEnd, t.actualEnd]).filter(t => t !== null && t > 0);
+                if (timestamps.length === 0) return [{ displayDate: 'N/A', baseline: 0, realized: 0, total: 0 }];
+
+                const minTime = Math.min(...timestamps);
+                const maxTime = Math.max(...timestamps);
+                const start = new Date(minTime);
+                start.setDate(1);
+                const end = addMonths(new Date(maxTime), 3);
+                const months = eachMonthOfInterval({ start, end });
+                const totalScopeCount = allTasks.length;
+        
+                return months.map(month => {
+                    const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+                    monthEnd.setHours(23, 59, 59);
+                    const baseline = allTasks.filter(t => t.plannedEnd && t.plannedEnd <= monthEnd.getTime()).length;
+                    const realized = allTasks.filter(t => t.actualEnd && t.actualEnd <= monthEnd.getTime()).length;
+                    return { displayDate: format(month, 'MMM/yy'), baseline, realized, total: totalScopeCount };
+                });
+            }, [data]);
+
+            const isVivo = theme === 'vivo';
+            const gridColor = isVivo ? '#703385' : '#e2e8f0';
+            const axisColor = isVivo ? '#BD4AFF' : '#64748b';
+            const tooltipBg = isVivo ? '#380054' : '#ffffff';
+            const tooltipText = isVivo ? '#ffffff' : '#1e293b';
+
+            return (
+                <div className={clsx("p-6 rounded-xl shadow-sm border h-[400px]", isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white")}>
+                    <h3 className={clsx("text-lg font-bold mb-6", isVivo && "text-white")}>Burnup de Entregas</h3>
+                    <ResponsiveContainer width="100%" height="85%">
+                        <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+                            <XAxis dataKey="displayDate" tick={{ fontSize: 12, fill: axisColor }} axisLine={false} tickLine={false}/>
+                            <YAxis tick={{ fontSize: 12, fill: axisColor }} axisLine={false} tickLine={false}/>
+                            <Tooltip contentStyle={{ backgroundColor: tooltipBg, color: tooltipText, borderRadius: '8px', border: `1px solid ${axisColor}` }}/>
+                            <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                            <Line name="Plano Base" type="monotone" dataKey="baseline" stroke={axisColor} strokeWidth={2} dot={false} />
+                            <Line name="Realizado" type="monotone" dataKey="realized" stroke={isVivo ? "#B2D682" : "#10b981"} strokeWidth={3} dot={{ r: 4 }} />
+                            <ReferenceLine y={chartData && chartData.length > 0 ? chartData[0].total : 0} stroke={gridColor} strokeDasharray="3 3" />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            );
+        };
+        
+        const PlaceholderChart = ({ title }) => (
+            <div className="p-6 rounded-xl shadow-sm border h-[400px] bg-vivo-roxo border-vivo-lilas/20 text-white flex items-center justify-center">
+                <h3 className="text-lg font-bold">{title}</h3>
+            </div>
+        );
+
+        const GanttChart = (props) => <PlaceholderChart title="Gantt Chart" />;
+        const AverageDurationChart = (props) => <PlaceholderChart title="Average Duration Chart" />;
+        const RoadmapTimeline = (props) => <PlaceholderChart title="Roadmap Timeline" />;
+        const DataTable = ({data, theme}) => {
+             const isVivo = theme === 'vivo';
+             return (
+                <div className={clsx("rounded-xl shadow-sm border overflow-hidden", isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white")}>
+                  <div className={clsx("p-6 border-b", isVivo ? "border-vivo-lilas/20" : "border-slate-100")}>
+                    <h3 className={clsx("text-lg font-bold", isVivo ? "text-white" : "text-slate-800")}>Detalhamento</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className={clsx("w-full text-left text-sm", isVivo ? "text-white/80" : "text-slate-600")}>
+                      <thead className={clsx("font-semibold uppercase text-xs tracking-wider", isVivo ? "bg-vivo-lilas/10 text-vivo-lilas" : "bg-slate-50 text-slate-500")}>
+                         <tr>
+                            <th className="px-6 py-4">Projeto</th>
+                            <th className="px-6 py-4">Status</th>
+                            <th className="px-6 py-4 text-right">Saving (R$)</th>
+                         </tr>
+                      </thead>
+                      <tbody className={clsx("divide-y", isVivo ? "divide-vivo-lilas/10" : "divide-slate-100")}>
+                         {data.length === 0 ? (
+                             <tr><td colSpan={3} className="px-6 py-8 text-center opacity-50">Nenhum dado.</td></tr>
+                         ) : (
+                             data.map(p => (
+                               <tr key={p.id} className={clsx("transition-colors", isVivo && "hover:bg-white/5")}>
+                                 <td className={clsx("px-6 py-4 font-medium", isVivo && "text-white")}>{p.name}</td>
+                                 <td className="px-6 py-4">{p.status}</td>
+                                 <td className="px-6 py-4 text-right font-mono">{p.saving.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                               </tr>
+                             ))
+                         )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+             )
+        };
+
+        const Dashboard = ({ data, onReset, onAppendData, theme, toggleTheme }) => {
+            const [filters, setFilters] = useState({ searchTerm: '', statusFilter: 'Todos', projectFilter: 'Todos', squadFilter: 'Todos' });
+            const fileInputRef = useRef(null);
+
+            const uniqueSquads = useMemo(() => Array.from(new Set(data.map(p => p.squad && p.squad.toUpperCase()).filter(Boolean))).sort(), [data]);
+            const uniqueProjects = useMemo(() => Array.from(new Set(data.map(p => p.name))).sort(), [data]);
+            const uniqueStatuses = useMemo(() => Array.from(new Set(data.map(d => d.status))), [data]);
+
+            const filteredData = useMemo(() => {
+                return data.filter(p => 
+                    p.name.toLowerCase().includes(filters.searchTerm.toLowerCase()) &&
+                    (filters.statusFilter === 'Todos' || p.status === filters.statusFilter) &&
+                    (filters.projectFilter === 'Todos' || p.name === filters.projectFilter) &&
+                    (filters.squadFilter === 'Todos' || (p.squad && p.squad.toUpperCase()) === filters.squadFilter)
+                );
+            }, [data, filters]);
+
+            const metrics = useMemo(() => {
+                const totalSaving = filteredData.reduce((acc, p) => acc + p.saving, 0);
+                const totalProjects = filteredData.length;
+                const statusDistribution = {};
+                filteredData.forEach(p => { statusDistribution[p.status] = (statusDistribution[p.status] || 0) + 1; });
+                const completed = statusDistribution['Concluído'] || 0;
+                const completionRate = totalProjects > 0 ? (completed / totalProjects) * 100 : 0;
+                return { totalSaving, totalProjects, statusDistribution, completionRate, avgDelayDays: 0 };
+            }, [filteredData]);
+
+            const handleFileChange = async (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    const files = Array.from(e.target.files);
+                    const results = await Promise.all(files.map(f => parseExcelFile(f)));
+                    if (results.flat().length > 0) onAppendData(results.flat());
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                }
+            };
+
+            const isVivo = theme === 'vivo';
+            
+            return (
+                <div className={clsx("min-h-screen pb-20", isVivo ? "bg-vivo-roxo-escuro text-white" : "bg-slate-100")}>
+                    <input type="file" multiple accept=".xlsx" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                    <header className={clsx("border-b sticky top-0 z-30 shadow-sm", isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white")}>
+                        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                               <div className={clsx("w-10 h-10 rounded-xl flex items-center justify-center font-bold", isVivo ? "bg-white" : "bg-brand-600 text-white")}>
+                                 {isVivo ? <img src="https://logodownload.org/wp-content/uploads/2014/02/vivo-logo-0.png" alt="Vivo" className="p-1"/> : 'F'}
+                               </div>
+                               <h1 className={clsx("text-xl font-bold", isVivo && "text-white")}>Dashboard <span className={clsx("font-normal", isVivo ? "text-vivo-lilas" : "text-slate-400")}>Executivo</span></h1>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <button onClick={toggleTheme} className={clsx("p-2 rounded-full", isVivo && "text-vivo-lilas hover:bg-vivo-lilas/10")} title="Alternar Tema">
+                                    {theme === 'light' ? <Sun /> : theme === 'dark' ? <Moon /> : <Sparkles />}
+                                </button>
+                                <div className={clsx("h-6 w-px", isVivo ? "bg-vivo-lilas/20" : "bg-slate-200")}></div>
+                                <button onClick={() => fileInputRef.current && fileInputRef.current.click()} className={clsx("flex items-center gap-2 text-sm font-medium", isVivo ? "text-vivo-menta hover:text-white" : "text-brand-600")}>
+                                    <PlusCircle /> <span className="hidden sm:inline">Adicionar Arquivo</span>
+                                </button>
+                                <button onClick={onReset} className={clsx("flex items-center gap-2 text-sm", isVivo ? "text-white/50 hover:text-white" : "text-slate-400")} title="Limpar">
+                                    <LogOut />
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <main className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+                        <KPICards metrics={metrics} theme={theme} />
+                        <GanttChart data={filteredData} theme={theme} singleProjectMode={false} />
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                           <div className="lg:col-span-2"><BurnupChart data={filteredData} theme={theme} /></div>
+                           <div className="lg:col-span-1"><AverageDurationChart data={filteredData} theme={theme} /></div>
+                        </div>
+                        <RoadmapTimeline data={filteredData} theme={theme} />
+                        <DataTable data={filteredData} theme={theme} />
+                    </main>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [data, setData] = useState([]);
+            const [theme, setTheme] = useState('vivo');
+
+            const toggleTheme = () => {
+                const themes = ['light', 'dark', 'vivo'];
+                setTheme(themes[(themes.indexOf(theme) + 1) % themes.length]);
+            };
+
+            const handleReset = () => setData([]);
+            const handleAppendData = (newData) => setData(prev => [...prev, ...newData]);
+            
+            const handleFileClick = () => {
+                const input = document.querySelector('input[type=file]');
+                if (input) input.click();
+            };
+
+            if (data.length === 0) {
+                 return (
+                     <div className="h-screen w-screen flex items-center justify-center bg-vivo-roxo-escuro">
+                         <div className="text-center text-white">
+                             <h1 className="text-3xl font-bold mb-4">Dashboard Executivo</h1>
+                             <p className="mb-8">Nenhum dado carregado. Por favor, importe um arquivo Excel para começar.</p>
+                             <button onClick={handleFileClick} className="bg-vivo-lilas px-6 py-3 rounded-lg font-bold">
+                                 Importar Arquivo
+                             </button>
+                         </div>
+                     </div>
+                 );
+            }
+
+            return <Dashboard data={data} onReset={handleReset} onAppendData={handleAppendData} theme={theme} toggleTheme={toggleTheme} />;
+        };
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

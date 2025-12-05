@@ -1,0 +1,5 @@
+{
+  "name": "Forgia Executive Dashboard",
+  "description": "Serverless BI dashboard for project management. Parses local Excel files to generate instant savings, burnup, and roadmap analytics.",
+  "requestFramePermissions": []
+}

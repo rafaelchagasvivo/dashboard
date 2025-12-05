@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Executivo Vivo - v4</title>
+    <!-- Tailwind CSS removido - usando estilos inline -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        vivo: {
+                            lilas: '#BD4AFF',
+                            roxo: '#380054',
+                            'roxo-escuro': '#180024',
+                            menta: '#B2D682',
+                            laranja: '#FF9900',
+                            rosa: '#EB3C7D',
+                            magenta: '#CC3D70',
+                            verde: '#82D400',
+                        },
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Estilos Tailwind essenciais inline */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; }
+        
+        /* Layout */
+        .min-h-screen { min-height: 100vh; }
+        .h-screen { height: 100vh; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .inline-flex { display: inline-flex; }
+        .grid { display: grid; }
+        .hidden { display: none; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .items-baseline { align-items: baseline; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-1 { gap: 0.25rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        
+        /* Spacing */
+        .p-1 { padding: 0.25rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .p-10 { padding: 2.5rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .pb-2 { padding-bottom: 0.5rem; }
+        .pb-3 { padding-bottom: 0.75rem; }
+        .pl-10 { padding-left: 2.5rem; }
+        .pr-4 { padding-right: 1rem; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        
+        /* Typography */
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .font-bold { font-weight: 700; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .uppercase { text-transform: uppercase; }
+        .tracking-tight { letter-spacing: -0.025em; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .whitespace-nowrap { white-space: nowrap; }
+        
+        /* Colors - Slate */
+        .bg-slate-50 { background-color: #f8fafc; }
+        .bg-slate-100 { background-color: #f1f5f9; }
+        .bg-slate-200 { background-color: #e2e8f0; }
+        .bg-slate-800 { background-color: #1e293b; }
+        .bg-slate-900 { background-color: #0f172a; }
+        .text-slate-400 { color: #94a3b8; }
+        .text-slate-500 { color: #64748b; }
+        .text-slate-600 { color: #475569; }
+        .text-slate-700 { color: #334155; }
+        .text-slate-800 { color: #1e293b; }
+        .text-slate-900 { color: #0f172a; }
+        .border-slate-200 { border-color: #e2e8f0; }
+        .border-slate-700 { border-color: #334155; }
+        
+        /* Colors - Vivo */
+        .bg-vivo-roxo-escuro { background-color: #180024; }
+        .bg-vivo-roxo { background-color: #380054; }
+        .text-vivo-lilas { color: #BD4AFF; }
+        .text-vivo-menta { color: #B2D682; }
+        .text-vivo-laranja { color: #FF9900; }
+        .text-vivo-rosa { color: #EB3C7D; }
+        .border-vivo-lilas { border-color: #BD4AFF; }
+        .bg-vivo-lilas { background-color: #BD4AFF; }
+        .bg-vivo-menta { background-color: #B2D682; }
+        .bg-vivo-laranja { background-color: #FF9900; }
+        .bg-vivo-rosa { background-color: #EB3C7D; }
+        
+        /* Colors - Brand */
+        .bg-brand-600 { background-color: #0284c7; }
+        .text-brand-600 { color: #0284c7; }
+        
+        /* Colors - Other */
+        .bg-white { background-color: #ffffff; }
+        .text-white { color: #ffffff; }
+        .bg-emerald-500 { background-color: #10b981; }
+        .bg-blue-500 { background-color: #3b82f6; }
+        .bg-red-500 { background-color: #ef4444; }
+        .text-emerald-600 { color: #10b981; }
+        .text-red-600 { color: #ef4444; }
+        .text-blue-600 { color: #3b82f6; }
+        .bg-red-50 { background-color: #fef2f2; }
+        .text-red-700 { color: #b91c1c; }
+        .border-red-200 { border-color: #fecaca; }
+        
+        /* Borders & Radius */
+        .border { border-width: 1px; }
+        .border-2 { border-width: 2px; }
+        .border-b { border-bottom-width: 1px; }
+        .border-dashed { border-style: dashed; }
+        .rounded { border-radius: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-full { border-radius: 9999px; }
+        .rounded-2xl { border-radius: 1rem; }
+        
+        /* Effects */
+        .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .opacity-0 { opacity: 0; }
+        .opacity-10 { opacity: 0.1; }
+        .opacity-20 { opacity: 0.2; }
+        .opacity-30 { opacity: 0.3; }
+        .opacity-50 { opacity: 0.5; }
+        .opacity-60 { opacity: 0.6; }
+        .opacity-80 { opacity: 0.8; }
+        
+        /* Position */
+        .relative { position: relative; }
+        .absolute { position: absolute; }
+        .sticky { position: sticky; }
+        .top-0 { top: 0; }
+        .right-0 { right: 0; }
+        .z-10 { z-index: 10; }
+        .z-30 { z-index: 30; }
+        
+        /* Sizing */
+        .w-4 { width: 1rem; }
+        .w-5 { width: 1.25rem; }
+        .w-10 { width: 2.5rem; }
+        .w-16 { width: 4rem; }
+        .w-20 { width: 5rem; }
+        .w-32 { width: 8rem; }
+        .w-48 { width: 12rem; }
+        .w-64 { width: 16rem; }
+        .h-4 { height: 1rem; }
+        .h-5 { height: 1.25rem; }
+        .h-6 { height: 1.5rem; }
+        .h-10 { height: 2.5rem; }
+        .h-16 { height: 4rem; }
+        .h-20 { height: 5rem; }
+        .h-32 { height: 8rem; }
+        .h-\[400px\] { height: 400px; }
+        .h-\[500px\] { height: 500px; }
+        .max-w-xl { max-width: 42rem; }
+        .max-w-4xl { max-width: 56rem; }
+        .max-w-7xl { max-width: 80rem; }
+        .max-w-xs { max-width: 20rem; }
+        
+        /* Utilities */
+        .overflow-hidden { overflow: hidden; }
+        .overflow-x-auto { overflow-x: auto; }
+        .overflow-y-auto { overflow-y: auto; }
+        .cursor-pointer { cursor: pointer; }
+        .transition-colors { transition-property: color, background-color, border-color; transition-duration: 0.15s; }
+        .transition-all { transition-property: all; transition-duration: 0.15s; }
+        .duration-300 { transition-duration: 0.3s; }
+        .duration-500 { transition-duration: 0.5s; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .vivo ::-webkit-scrollbar-thumb { background: #BD4AFF; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(189, 74, 255, 0.3); border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(189, 74, 255, 0.5); }
+        
+        /* Animations */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .animate-spin { animation: spin 1s linear infinite; }
+        
+        /* Dark mode */
+        .dark .bg-slate-800 { background-color: #1e293b; }
+        .dark .bg-slate-900 { background-color: #0f172a; }
+        .dark .text-slate-100 { color: #f1f5f9; }
+        .dark .text-slate-200 { color: #e2e8f0; }
+        .dark .text-slate-400 { color: #94a3b8; }
+        .dark .border-slate-700 { border-color: #334155; }
+        
+        /* Vivo mode */
+        .vivo .bg-vivo-roxo-escuro { background-color: #180024; }
+        .vivo .text-white { color: #ffffff; }
+        
+        /* Responsive */
+        @media (min-width: 640px) {
+            .sm\:inline { display: inline; }
+        }
+        @media (min-width: 768px) {
+            .md\:block { display: block; }
+            .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+            .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .lg\:col-span-1 { grid-column: span 1 / span 1; }
+            .lg\:col-span-2 { grid-column: span 2 / span 2; }
+        }
+        @media (min-width: 1280px) {
+            .xl\:flex-row { flex-direction: row; }
+            .xl\:items-center { align-items: center; }
+            .xl\:w-auto { width: auto; }
+        }
+        
+        /* Additional utilities */
+        .group:hover .group-hover\:opacity-20 { opacity: 0.2; }
+        .appearance-none { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+        .pointer-events-none { pointer-events: none; }
+        .shrink-0 { flex-shrink: 0; }
+        .flex-1 { flex: 1 1 0%; }
+    </style>
+    <script>
+        function loadScript(src, callback, onerror) {
+            const script = document.createElement('script');
+            script.src = src;
+            if (callback) script.onload = callback;
+            script.onerror = onerror || (() => console.error('Erro ao carregar:', src));
+            document.head.appendChild(script);
+        }
+
+        function run() {
+            // Carregar React primeiro
+            loadScript("https://unpkg.com/react@18/umd/react.development.js", () => {
+                loadScript("https://unpkg.com/react-dom@18/umd/react-dom.development.js", () => {
+                    // Carregar PropTypes e torná-lo global
+                    loadScript("https://unpkg.com/prop-types@15/prop-types.min.js", () => {
+                        // Garantir que PropTypes está disponível globalmente
+                        if (typeof PropTypes !== 'undefined' && typeof window !== 'undefined') {
+                            window.PropTypes = PropTypes;
+                        }
+                        
+                        loadScript("https://unpkg.com/babel-standalone@6/babel.min.js", () => {
+                        // clsx inline
+                        window.clsx = function() {
+                            var classes = [];
+                            for (var i = 0; i < arguments.length; i++) {
+                                var arg = arguments[i];
+                                if (!arg) continue;
+                                var argType = typeof arg;
+                                if (argType === 'string' || argType === 'number') {
+                                    classes.push(arg);
+                                } else if (Array.isArray(arg)) {
+                                    var inner = window.clsx.apply(null, arg);
+                                    if (inner) classes.push(inner);
+                                } else if (argType === 'object') {
+                                    for (var key in arg) {
+                                        if (arg.hasOwnProperty(key) && arg[key]) {
+                                            classes.push(key);
+                                        }
+                                    }
+                                }
+                            }
+                            return classes.join(' ');
+                        };
+                        
+                        // date-fns inline (simplificado)
+                        window.dateFns = {
+                            format: function(date, formatStr) {
+                                if (!date) return '';
+                                const d = new Date(date);
+                                const day = String(d.getDate()).padStart(2, '0');
+                                const month = String(d.getMonth() + 1).padStart(2, '0');
+                                const year = d.getFullYear();
+                                const shortYear = String(year).slice(-2);
+                                const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                                const monthName = monthNames[d.getMonth()];
+                                
+                                return formatStr
+                                    .replace('dd', day)
+                                    .replace('MM', month)
+                                    .replace('yyyy', year)
+                                    .replace('yy', shortYear)
+                                    .replace('MMM', monthName)
+                                    .replace('MMM/yy', monthName + '/' + shortYear)
+                                    .replace('dd/MM/yy', day + '/' + month + '/' + shortYear)
+                                    .replace('dd/MM/yyyy', day + '/' + month + '/' + year);
+                            },
+                            isAfter: function(date1, date2) { return new Date(date1) > new Date(date2); },
+                            isBefore: function(date1, date2) { return new Date(date1) < new Date(date2); },
+                            addDays: function(date, days) { const d = new Date(date); d.setDate(d.getDate() + days); return d; },
+                            addMonths: function(date, months) { const d = new Date(date); d.setMonth(d.getMonth() + months); return d; },
+                            subDays: function(date, days) { const d = new Date(date); d.setDate(d.getDate() - days); return d; },
+                            startOfToday: function() { const d = new Date(); d.setHours(0, 0, 0, 0); return d; },
+                            eachMonthOfInterval: function(interval) {
+                                const months = [];
+                                const start = new Date(interval.start);
+                                const end = new Date(interval.end);
+                                const current = new Date(start);
+                                current.setDate(1);
+                                while (current <= end) {
+                                    months.push(new Date(current));
+                                    current.setMonth(current.getMonth() + 1);
+                                }
+                                return months;
+                            }
+                        };
+                        
+                        // Continuar carregamento - Tentar múltiplas URLs para XLSX
+                        const xlsxUrls = [
+                                        "https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js",
+                                        "https://cdn.jsdelivr.net/npm/xlsx@0.20.1/dist/xlsx.full.min.js",
+                                        "https://unpkg.com/xlsx@0.20.1/dist/xlsx.full.min.js"
+                                    ];
+                                    
+                                    let xlsxLoaded = false;
+                                    const tryLoadXlsx = (index) => {
+                                        if (index >= xlsxUrls.length) {
+                                            console.error('Não foi possível carregar XLSX de nenhuma fonte!');
+                                            return;
+                                        }
+                                        loadScript(xlsxUrls[index], () => {
+                                            if (typeof XLSX !== 'undefined') {
+                                                xlsxLoaded = true;
+                                                loadRecharts();
+                                            } else {
+                                                tryLoadXlsx(index + 1);
+                                            }
+                                        }, () => {
+                                            // Em caso de erro, tentar próxima URL
+                                            tryLoadXlsx(index + 1);
+                                        });
+                                    };
+                                    
+                                    const loadRecharts = () => {
+                                        // Tentar múltiplas versões/fontes do Recharts
+                                        const rechartsUrls = [
+                                            "https://unpkg.com/recharts@2.12.0/umd/Recharts.js",
+                                            "https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"
+                                        ];
+                                        
+                                        let rechartsLoaded = false;
+                                        const tryLoadRecharts = (index) => {
+                                            if (index >= rechartsUrls.length) {
+                                                console.error('Não foi possível carregar Recharts! Tentando continuar sem gráficos...');
+                                                // Continuar mesmo sem Recharts - gráficos não funcionarão mas o resto sim
+                                                executeApp();
+                                                return;
+                                            }
+                                            loadScript(rechartsUrls[index], () => {
+                                                if (typeof Recharts !== 'undefined') {
+                                                    rechartsLoaded = true;
+                                                    setTimeout(executeApp, 200);
+                                                } else {
+                                                    tryLoadRecharts(index + 1);
+                                                }
+                                            }, () => {
+                                                tryLoadRecharts(index + 1);
+                                            });
+                                        };
+                                        
+                                        tryLoadRecharts(0);
+                                    };
+                                    
+                                    const executeApp = () => {
+                                        try {
+                                            // Verificar bibliotecas essenciais
+                                            if (typeof React === 'undefined') {
+                                                console.error('React não está carregado!');
+                                                return;
+                                            }
+                                            if (typeof ReactDOM === 'undefined') {
+                                                console.error('ReactDOM não está carregado!');
+                                                return;
+                                            }
+                                            if (typeof XLSX === 'undefined') {
+                                                console.error('XLSX não está carregado!');
+                                                return;
+                                            }
+                                            
+                                            if (typeof Recharts === 'undefined') {
+                                                console.warn('Recharts não está carregado! Os gráficos não funcionarão.');
+                                            } else {
+                                                console.log('Todas as bibliotecas carregadas com sucesso!');
+                                            }
+                                            
+                                            const script = document.getElementById('main-script').innerHTML;
+                                            const transformedScript = Babel.transform(script, { 
+                                                presets: ['react', 'es2015'],
+                                                plugins: ['transform-class-properties']
+                                            }).code;
+                                            const newScript = document.createElement('script');
+                                            newScript.innerHTML = transformedScript;
+                                            document.body.appendChild(newScript);
+                                        } catch (error) {
+                                            console.error("Erro ao transpilar ou executar o script:", error);
+                                            console.error("Stack:", error.stack);
+                                        }
+                                    };
+                                    
+                                    tryLoadXlsx(0);
+                        });
+                    });
+                });
+            });
+        }
+    </script>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300" onload="run()">
+    <div id="root"></div>
+
+    <script id="main-script" type="text/babel-deferred">
+        const { useState, useMemo, useRef, useEffect, useCallback } = React;
+        // Acessar Recharts - verificar se está disponível
+        if (typeof Recharts === 'undefined') {
+            console.error('Recharts não está disponível!');
+        }
+        const RechartsLib = typeof Recharts !== 'undefined' ? Recharts : {};
+        const { 
+            LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine,
+            BarChart, Bar, Cell, LabelList
+        } = RechartsLib;
+        const { format, isAfter, isBefore, eachMonthOfInterval, addMonths, addDays, startOfToday, subDays } = dateFns;
+
+        // Icon Components (simplified)
+        const Search = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+        const Filter = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>;
+        const LogOut = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>;
+        const Sun = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
+        const Moon = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
+        const Sparkles = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>;
+        const FolderOpen = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h12a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" /></svg>;
+        const PlusCircle = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+        const Loader2 = ({ className }) => <svg className={clsx(className, "animate-spin")} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>;
+        const LayoutDashboard = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>;
+        const Users = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
+        const DollarSign = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+        const LayoutList = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>;
+        const TrendingUp = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>;
+        const AlertTriangle = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>;
+        const CheckCircle2 = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+        const UploadCloud = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>;
+        const FileSpreadsheet = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>;
+        const AlertCircle = ({ className }) => <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+
+        // Excel Parser (from excelParser.ts)
+        const parseExcelDate = (value) => {
+            if (!value) return null;
+            if (typeof value === 'number') {
+                return addDays(new Date(1899, 11, 30), Math.floor(value));
+            }
+            if (value instanceof Date) return value;
+            if (typeof value === 'string') {
+                const timestamp = Date.parse(value);
+                if (!isNaN(timestamp)) return new Date(timestamp);
+                const parts = value.split('/');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1;
+                    let year = parseInt(parts[2], 10);
+                    if (year < 100) year += 2000;
+                    const date = new Date(year, month, day);
+                    if (!isNaN(date.getTime())) return date;
+                }
+            }
+            return null;
+        };
+
+        const parseCurrency = (value) => {
+            if (typeof value === 'number') return value;
+            if (!value) return 0;
+            if (typeof value === 'string') {
+                let clean = value.replace(/[R$\s]/g, '');
+                if (clean.includes(',') && clean.indexOf(',') > clean.lastIndexOf('.')) {
+                    clean = clean.replace(/\./g, '').replace(',', '.');
+                } else {
+                    clean = clean.replace(/,/g, '');
+                }
+                const float = parseFloat(clean);
+                return isNaN(float) ? 0 : float;
+            }
+            return 0;
+        };
+
+        const normalizeStatus = (status, completionPercent = 0, isLate = false) => {
+            const s = (status || '').toLowerCase().trim();
+            if (s.includes('conclu') || s.includes('entregue') || completionPercent >= 99) return 'Concluído';
+            if (s.includes('cancel')) return 'Cancelado';
+            if (s.includes('atrasado') || s.includes('bloqueado')) return 'Atrasado';
+            if (isLate) return 'Atrasado';
+            if (completionPercent > 0) return 'Em Andamento';
+            return 'Não Iniciado';
+        };
+
+        const extractHeaderValue = (row, colIndex, keyword) => {
+            const cellVal = String(row[colIndex] || '');
+            const regex = new RegExp(`^${keyword}[\\s:]*(.*)`, 'i');
+            const match = cellVal.match(regex);
+            if (match && match[1] && match[1].trim().length > 0) {
+                return match[1].trim();
+            }
+            const cleanedCell = cellVal.toLowerCase().replace(':', '').trim();
+            if (cleanedCell === keyword.toLowerCase() || cleanedCell.startsWith(keyword.toLowerCase())) {
+                if (colIndex + 1 < row.length && row[colIndex + 1]) {
+                    return String(row[colIndex + 1]).trim();
+                }
+            }
+            return '';
+        };
+
+        const parseExcelFile = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = e.target?.result;
+                        const workbook = XLSX.read(data, { type: 'binary' });
+                        const projects = [];
+                        const skippedSheets = ['feriados', 'config', 'instrucoes', 'menu', 'legendas', 'historico', 'capa'];
+
+                        workbook.SheetNames.forEach((sheetName) => {
+                            if (skippedSheets.some(skip => sheetName.toLowerCase().includes(skip))) return;
+                            const sheet = workbook.Sheets[sheetName];
+                            const project = parseProjectSheet(sheet, sheetName, file.name);
+                            if (project) projects.push(project);
+                        });
+
+                        if (projects.length === 0) {
+                            console.warn(`Arquivo ${file.name} não contém abas válidas de projeto.`);
+                            resolve([]);
+                            return;
+                        }
+                        resolve(projects);
+                    } catch (error) {
+                        console.error("Parse Error:", error);
+                        reject(error);
+                    }
+                };
+                reader.onerror = (error) => reject(error);
+                reader.readAsBinaryString(file);
+            });
+        };
+
+        const parseProjectSheet = (sheet, sheetName, fileName) => {
+            const grid = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+            if (!grid || grid.length < 5) return null;
+
+            let name = sheetName;
+            let description = '';
+            let saving = 0;
+            let factory = '';
+            let squad = '';
+            let architect = '';
+            let analyst = '';
+            let developer = '';
+
+            if (grid.length > 2 && grid[2] && grid[2][2]) {
+                description = String(grid[2][2]).trim();
+            }
+
+            for (let r = 0; r < Math.min(grid.length, 15); r++) {
+                const row = grid[r];
+                for (let c = 0; c < row.length; c++) {
+                    const cellVal = String(row[c] || '').trim();
+                    const lowerVal = cellVal.toLowerCase();
+
+                    if (!cellVal) continue;
+
+                    if (lowerVal.includes('benefício') || lowerVal.includes('saving')) {
+                        const match = cellVal.match(/[:\s]\s*(?:R\$)?\s*([\d.,]+)/);
+                        if (match) saving = parseCurrency(match[1]);
+                        else if (c + 1 < row.length) {
+                            const nextVal = row[c+1];
+                            if (typeof nextVal === 'number' || (typeof nextVal === 'string' && nextVal.match(/[\d.,]/))) {
+                                saving = parseCurrency(nextVal);
+                            }
+                        }
+                    }
+
+                    if (!factory && (lowerVal.includes('fábrica') || lowerVal.includes('fabrica'))) {
+                        factory = extractHeaderValue(row, c, 'fábrica') || extractHeaderValue(row, c, 'fabrica');
+                    }
+                    if (!squad && lowerVal.includes('squad')) {
+                        squad = extractHeaderValue(row, c, 'squad');
+                    }
+                    if (!architect) {
+                        if (lowerVal.includes('arquiteto')) architect = extractHeaderValue(row, c, 'arquiteto');
+                        else if (lowerVal === 'arq' || lowerVal.startsWith('arq:')) architect = extractHeaderValue(row, c, 'arq');
+                    }
+                    if (!analyst) {
+                        if (lowerVal.includes('analista')) analyst = extractHeaderValue(row, c, 'analista');
+                        else if (lowerVal === 'af' || lowerVal.startsWith('af:') || lowerVal === 'analista func') analyst = extractHeaderValue(row, c, 'af') || extractHeaderValue(row, c, 'analista');
+                    }
+                    if (!developer) {
+                        if (lowerVal.includes('desenvol')) developer = extractHeaderValue(row, c, 'desenvol');
+                        else if (lowerVal.includes('dev') && !lowerVal.includes('delivery')) developer = extractHeaderValue(row, c, 'dev');
+                    }
+                }
+            }
+
+            let headerRowIndex = -1;
+            for (let r = 0; r < 20; r++) {
+                const rowStr = (grid[r] || []).join(' ').toUpperCase();
+                if (rowStr.includes('TAREFA') || rowStr.includes('ETAPA')) {
+                    headerRowIndex = r;
+                    break;
+                }
+            }
+
+            if (headerRowIndex === -1) return null;
+
+            const headerRow = grid[headerRowIndex].map(v => String(v).toUpperCase().trim());
+            const colIndexTask = headerRow.findIndex(h => h.includes('TAREFA') || h.includes('ETAPA'));
+            const colIndexStart = headerRow.findIndex(h => h.includes('INICIO') || h.includes('INÍCIO'));
+            const colIndexPlannedEnd = headerRow.indexOf('FIM');
+            const colIndexExecutedEnd = headerRow.lastIndexOf('FIM');
+            const colIndexDuration = headerRow.findIndex(h => h.includes('DIAS') || h.includes('DURAÇÃO'));
+            const colIndexProgress = headerRow.findIndex(h => h.includes('PROGRE') || h.includes('%'));
+
+            const tasks = [];
+            const stageDurations = {};
+            
+            const stageKeywords = {
+                'DISCOVERY': 'Discovery',
+                'MAPEAMENTO': 'Discovery',
+                'DELIVERY': 'Delivery',
+                'DESENVOLVIMENTO': 'Desenvolvimento',
+                'DEV': 'Desenvolvimento',
+                'HOMOLOGAÇÃO': 'Homologação',
+                'QA': 'Homologação',
+                'ROLLOUT': 'Implantação',
+                'IMPLANTAÇÃO': 'Implantação'
+            };
+
+            let totalProgress = 0;
+            let taskCount = 0;
+
+            for (let r = headerRowIndex + 1; r < grid.length; r++) {
+                const row = grid[r];
+                if (!row || (!row[0] && !row[1])) continue;
+
+                const taskName = String(row[colIndexTask] || '').trim();
+                if (!taskName) continue;
+
+                const plannedEndVal = row[colIndexPlannedEnd];
+                const executedEndVal = colIndexExecutedEnd > colIndexPlannedEnd ? row[colIndexExecutedEnd] : null;
+                const durationVal = colIndexDuration > -1 ? row[colIndexDuration] : 0;
+                const progressVal = colIndexProgress > -1 ? row[colIndexProgress] : 0;
+                const startVal = colIndexStart > -1 ? row[colIndexStart] : null;
+
+                const pDate = parseExcelDate(plannedEndVal);
+                const eDate = parseExcelDate(executedEndVal);
+                let sDate = parseExcelDate(startVal);
+                
+                const duration = typeof durationVal === 'number' ? durationVal : parseInt(durationVal) || 0;
+
+                if (!sDate && pDate && duration > 0) {
+                    sDate = subDays(pDate, duration);
+                }
+
+                let p = 0;
+                if (typeof progressVal === 'number') p = progressVal <= 1 ? progressVal * 100 : progressVal;
+                else if (typeof progressVal === 'string') p = parseFloat(progressVal.replace('%', ''));
+                if (isNaN(p)) p = 0;
+
+                if (pDate) {
+                    tasks.push({
+                        name: taskName,
+                        startDate: sDate ? sDate.getTime() : null,
+                        plannedEnd: pDate.getTime(),
+                        actualEnd: eDate ? eDate.getTime() : null,
+                        duration,
+                        progress: p
+                    });
+                }
+
+                const upperName = taskName.toUpperCase();
+                for (const [key, label] of Object.entries(stageKeywords)) {
+                    if (upperName.includes(key)) {
+                        let days = duration;
+                        if (days === 0 && pDate && sDate) {
+                            days = 1; 
+                        }
+                        stageDurations[label] = (stageDurations[label] || 0) + days;
+                        break; 
+                    }
+                }
+
+                if (pDate) { 
+                    totalProgress += p;
+                    taskCount++;
+                }
+            }
+
+            const avgProgress = taskCount > 0 ? totalProgress / taskCount : 0;
+            
+            const validPlanned = tasks.filter(t => t.plannedEnd).map(t => t.plannedEnd);
+            const validStarts = tasks.filter(t => t.startDate).map(t => t.startDate);
+            const validActual = tasks.filter(t => t.actualEnd && t.progress >= 99).map(t => t.actualEnd);
+            
+            const baselineDate = validPlanned.length > 0 ? new Date(Math.max(...validPlanned)) : null;
+            const startDate = validStarts.length > 0 ? new Date(Math.min(...validStarts)) : null;
+
+            const isDone = avgProgress >= 99;
+            const actualDate = (isDone && validActual.length > 0) ? new Date(Math.max(...validActual)) : null;
+
+            const isLate = baselineDate ? isAfter(startOfToday(), baselineDate) && !isDone : false;
+            const status = normalizeStatus('', avgProgress, isLate);
+
+            if (!baselineDate && saving === 0) return null;
+
+            const uniqueId = `${fileName.replace(/\s+/g, '_')}-${sheetName.replace(/\s+/g, '_')}-${Date.now()}`;
+
+            return {
+                id: uniqueId,
+                name: name,
+                description,
+                startDate,
+                baselineDate,
+                actualDate,
+                status,
+                saving,
+                tasks,
+                stageDurations,
+                factory,
+                squad,
+                architect,
+                analyst,
+                developer
+            };
+        };
+
+        // FileUpload Component
+        const FileUpload = ({ onDataLoaded, theme, toggleTheme }) => {
+            const [isDragging, setIsDragging] = useState(false);
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState(null);
+
+            const processFiles = async (files) => {
+                setIsLoading(true);
+                setError(null);
+                try {
+                    const fileArray = Array.from(files);
+                    const validFiles = fileArray.filter(f => f.name.endsWith('.xlsx'));
+                    
+                    if (validFiles.length === 0) {
+                        throw new Error("Por favor, carregue apenas arquivos Excel (.xlsx)");
+                    }
+
+                    const promises = validFiles.map(file => parseExcelFile(file));
+                    const results = await Promise.all(promises);
+                    const flatData = results.flat();
+
+                    if (flatData.length === 0) {
+                        throw new Error("Nenhum projeto válido encontrado nos arquivos selecionados.");
+                    }
+
+                    setTimeout(() => {
+                        onDataLoaded(flatData);
+                        setIsLoading(false);
+                    }, 600);
+
+                } catch (err) {
+                    setError(err.message || "Erro ao processar arquivos.");
+                    setIsLoading(false);
+                }
+            };
+
+            const handleDrop = useCallback((e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                const files = e.dataTransfer.files;
+                if (files && files.length > 0) {
+                    processFiles(files);
+                }
+            }, []);
+
+            const handleDragOver = (e) => {
+                e.preventDefault();
+                setIsDragging(true);
+            };
+
+            const handleDragLeave = (e) => {
+                e.preventDefault();
+                setIsDragging(false);
+            };
+
+            const handleFileInput = (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    processFiles(e.target.files);
+                }
+            };
+
+            const isVivo = theme === 'vivo';
+
+            return (
+                <div className={clsx(
+                    "relative flex flex-col items-center justify-center min-h-screen p-6 transition-colors duration-300",
+                    isVivo ? "bg-vivo-roxo-escuro" : "bg-slate-50 dark:bg-slate-900"
+                )}>
+                    <button 
+                        onClick={toggleTheme}
+                        className={clsx(
+                            "absolute top-6 right-6 p-2 rounded-full transition-colors",
+                            isVivo 
+                                ? "text-vivo-lilas hover:bg-vivo-lilas/20" 
+                                : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                        )}
+                    >
+                        {theme === 'light' && <Sun className="w-5 h-5" />}
+                        {theme === 'dark' && <Moon className="w-5 h-5" />}
+                        {theme === 'vivo' && <Sparkles className="w-5 h-5" />}
+                    </button>
+
+                    <div className="text-center mb-8 flex flex-col items-center">
+                        {isVivo ? (
+                            <img 
+                                src="https://logodownload.org/wp-content/uploads/2014/02/vivo-logo-0.png" 
+                                alt="Vivo" 
+                                className="w-32 h-auto mb-4 object-contain"
+                            />
+                        ) : (
+                            <div className="w-20 h-20 mb-4 bg-brand-600 dark:bg-brand-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white shadow-lg">
+                                F
+                            </div>
+                        )}
+                        <h1 className={clsx("text-4xl font-bold tracking-tight mb-2", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>
+                            Dashboard Executivo
+                        </h1>
+                        <p className={clsx("text-sm", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>
+                            Inteligência Executiva Local. Seus dados não saem do seu dispositivo.
+                        </p>
+                    </div>
+
+                    <div
+                        onDrop={handleDrop}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        className={clsx(
+                            "w-full max-w-xl p-10 border-2 border-dashed rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-4 cursor-pointer",
+                            isDragging 
+                                ? (isVivo ? 'border-vivo-lilas bg-vivo-lilas/10 scale-105' : 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 scale-105') 
+                                : (isVivo 
+                                    ? 'border-vivo-lilas/30 bg-vivo-roxo hover:border-vivo-lilas hover:bg-vivo-roxo/80' 
+                                    : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-brand-400 dark:hover:border-brand-500')
+                        )}
+                    >
+                        <div className="relative">
+                            {isLoading ? (
+                                <Loader2 className={clsx("w-16 h-16", isVivo ? "text-vivo-lilas" : "text-brand-500")} />
+                            ) : (
+                                <div className="relative">
+                                    <FileSpreadsheet className={clsx("w-16 h-16", isVivo ? "text-vivo-lilas" : "text-slate-400 dark:text-slate-500")} />
+                                    <div className={clsx("absolute -bottom-2 -right-2 rounded-full p-1", isVivo ? "bg-vivo-rosa text-white" : "bg-brand-500 text-white")}>
+                                        <UploadCloud className="w-4 h-4" />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="text-center">
+                            <h3 className={clsx("text-lg font-semibold", isVivo ? "text-white" : "text-slate-700 dark:text-slate-200")}>
+                                {isLoading ? "Processando..." : "Arraste suas planilhas aqui"}
+                            </h3>
+                            <p className={clsx("text-sm mt-1", isVivo ? "text-white/60" : "text-slate-500 dark:text-slate-400")}>
+                                Suporta múltiplos arquivos simultâneos (.xlsx)
+                            </p>
+                        </div>
+
+                        <input
+                            type="file"
+                            accept=".xlsx"
+                            multiple
+                            onChange={handleFileInput}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            disabled={isLoading}
+                        />
+                    </div>
+
+                    {error && (
+                        <div className="mt-6 flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-900">
+                            <AlertCircle className="w-5 h-5" />
+                            <span className="text-sm font-medium">{error}</span>
+                        </div>
+                    )}
+
+                    <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-center max-w-4xl">
+                        <div className={clsx("p-4 rounded-lg shadow-sm border transition-colors", isVivo ? "bg-vivo-roxo border-vivo-lilas/20 text-white" : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-200")}>
+                            <div className="font-semibold">100% Seguro</div>
+                            <div className={clsx("text-xs mt-1", isVivo ? "text-white/60" : "text-slate-500 dark:text-slate-400")}>Processamento local. Nenhuma nuvem envolvida.</div>
+                        </div>
+                        <div className={clsx("p-4 rounded-lg shadow-sm border transition-colors", isVivo ? "bg-vivo-roxo border-vivo-lilas/20 text-white" : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-200")}>
+                            <div className="font-semibold">Multi-Arquivo</div>
+                            <div className={clsx("text-xs mt-1", isVivo ? "text-white/60" : "text-slate-500 dark:text-slate-400")}>Carregue várias planilhas de uma só vez.</div>
+                        </div>
+                        <div className={clsx("p-4 rounded-lg shadow-sm border transition-colors", isVivo ? "bg-vivo-roxo border-vivo-lilas/20 text-white" : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-200")}>
+                            <div className="font-semibold">Padrão Forgia</div>
+                            <div className={clsx("text-xs mt-1", isVivo ? "text-white/60" : "text-slate-500 dark:text-slate-400")}>Compatível com o padrão de gestão da empresa.</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // KPICards Component
+        const KPICards = ({ metrics, theme }) => {
+            const formatCurrency = (val) => {
+                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+            };
+
+            const isVivo = theme === 'vivo';
+
+            const cardClasses = clsx(
+                "p-5 rounded-xl shadow-sm border relative overflow-hidden group transition-colors",
+                isVivo 
+                    ? "bg-vivo-roxo border-vivo-lilas/20 hover:border-vivo-lilas/50" 
+                    : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+            );
+
+            return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div className={cardClasses}>
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <DollarSign className={clsx("w-16 h-16", isVivo ? "text-vivo-menta" : "text-emerald-600 dark:text-emerald-500")} />
+                        </div>
+                        <div className="flex flex-col relative z-10">
+                            <span className={clsx("text-xs uppercase font-bold tracking-wider", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Saving Total</span>
+                            <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>{formatCurrency(metrics.totalSaving)}</span>
+                            <div className={clsx("flex items-center gap-1 mt-2 text-xs font-medium", isVivo ? "text-vivo-menta" : "text-emerald-600 dark:text-emerald-400")}>
+                                <TrendingUp className="w-3 h-3" />
+                                <span>Acumulado</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={cardClasses}>
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <LayoutList className={clsx("w-16 h-16", isVivo ? "text-vivo-rosa" : "text-brand-600 dark:text-brand-500")} />
+                        </div>
+                        <div className="flex flex-col relative z-10">
+                            <span className={clsx("text-xs uppercase font-bold tracking-wider", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Portfólio</span>
+                            <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>{metrics.totalProjects}</span>
+                            <span className={clsx("text-xs mt-2", isVivo ? "text-white/60" : "text-slate-400 dark:text-slate-500")}>Projetos monitorados</span>
+                        </div>
+                    </div>
+
+                    <div className={cardClasses}>
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <CheckCircle2 className={clsx("w-16 h-16", isVivo ? "text-vivo-lilas" : "text-blue-600 dark:text-blue-500")} />
+                        </div>
+                        <div className="flex flex-col relative z-10">
+                            <span className={clsx("text-xs uppercase font-bold tracking-wider", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Conclusão</span>
+                            <div className="flex items-baseline gap-2">
+                                <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>{metrics.completionRate.toFixed(1)}%</span>
+                                <span className={clsx("text-xs", isVivo ? "text-white/60" : "text-slate-500")}>do total</span>
+                            </div>
+                            <div className={clsx("w-full h-1.5 rounded-full mt-3", isVivo ? "bg-white/10" : "bg-slate-100 dark:bg-slate-700")}>
+                                <div 
+                                    className={clsx("h-1.5 rounded-full transition-all duration-500", isVivo ? "bg-vivo-lilas" : "bg-blue-500 dark:bg-blue-400")}
+                                    style={{ width: `${metrics.completionRate}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={cardClasses}>
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <AlertTriangle className={clsx("w-16 h-16", isVivo ? "text-vivo-laranja" : "text-red-600 dark:text-red-500")} />
+                        </div>
+                        <div className="flex flex-col relative z-10">
+                            <span className={clsx("text-xs uppercase font-bold tracking-wider", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Atenção</span>
+                            <span className={clsx("text-2xl font-bold mt-1", isVivo ? "text-vivo-laranja" : "text-red-600 dark:text-red-400")}>{metrics.statusDistribution['Atrasado'] || 0}</span>
+                            <span className={clsx("text-xs mt-2 font-medium", isVivo ? "text-vivo-laranja/80" : "text-red-600/80 dark:text-red-400/80")}>Projetos em atraso</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // BurnupChart Component (continues in next part due to length)
+        const BurnupChart = ({ data, theme }) => {
+            const chartData = useMemo(() => {
+                if (data.length === 0) return [];
+
+                const allTasks = data.flatMap(p => p.tasks || []);
+                if (allTasks.length === 0) return [];
+
+                const timestamps = allTasks
+                    .flatMap(t => [t.plannedEnd, t.actualEnd])
+                    .filter((t) => t !== null && t > 0);
+
+                if (timestamps.length === 0) return [];
+
+                const minTime = Math.min(...timestamps);
+                const maxTime = Math.max(...timestamps);
+
+                const start = new Date(minTime);
+                start.setDate(1);
+                
+                const end = addMonths(new Date(maxTime), 3); 
+
+                const months = eachMonthOfInterval({ start, end });
+                const now = new Date();
+
+                const totalScopeCount = allTasks.length;
+
+                let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+                let n = 0;
+
+                const points = months.map((month, index) => {
+                    const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+                    monthEnd.setHours(23, 59, 59);
+
+                    const baseline = allTasks.filter(t => t.plannedEnd && t.plannedEnd <= monthEnd.getTime()).length;
+
+                    const isPastOrCurrent = isBefore(month, now) || month.getMonth() === now.getMonth();
+                    
+                    let realized = null;
+                    
+                    if (isPastOrCurrent) {
+                        realized = allTasks.filter(t => t.actualEnd && t.actualEnd <= monthEnd.getTime() && t.progress >= 99).length;
+                        
+                        n++;
+                        sumX += index;
+                        sumY += realized;
+                        sumXY += index * realized;
+                        sumXX += index * index;
+                    }
+
+                    return {
+                        index,
+                        date: month.toISOString(),
+                        displayDate: format(month, 'MMM/yy'),
+                        baseline,
+                        realized,
+                        total: totalScopeCount
+                    };
+                });
+
+                let slope = 0;
+                let intercept = 0;
+                if (n > 1) {
+                    slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                    intercept = (sumY - slope * sumX) / n;
+                }
+
+                return points.map(p => {
+                    let forecast = null;
+                    if (p.realized === null && slope > 0) {
+                        forecast = Math.min(Math.round(slope * p.index + intercept), p.total);
+                        if (forecast < 0) forecast = 0;
+                    }
+                    return {
+                        ...p,
+                        forecast
+                    };
+                });
+
+            }, [data]);
+
+            const isVivo = theme === 'vivo';
+            const isDark = theme === 'dark' || theme === 'vivo';
+
+            const gridColor = isVivo ? '#703385' : (isDark ? '#334155' : '#e2e8f0');
+            const axisColor = isVivo ? '#BD4AFF' : (isDark ? '#94a3b8' : '#64748b');
+            const tooltipBg = isVivo ? '#380054' : (isDark ? '#1e293b' : '#ffffff');
+            const tooltipText = isVivo ? '#ffffff' : (isDark ? '#f1f5f9' : '#1e293b');
+            const tooltipBorder = isVivo ? '#BD4AFF' : gridColor;
+
+            return (
+                <div className={clsx(
+                    "p-6 rounded-xl shadow-sm border h-[400px] transition-colors",
+                    isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                )}>
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className={clsx("text-lg font-bold", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>Burnup de Entregas (Tarefas)</h3>
+                    </div>
+
+                    <ResponsiveContainer width="100%" height="85%">
+                        <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+                            <XAxis 
+                                dataKey="displayDate" 
+                                tick={{ fontSize: 12, fill: axisColor }} 
+                                axisLine={false} 
+                                tickLine={false}
+                            />
+                            <YAxis 
+                                tick={{ fontSize: 12, fill: axisColor }} 
+                                axisLine={false} 
+                                tickLine={false}
+                            />
+                            <Tooltip 
+                                contentStyle={{ 
+                                    backgroundColor: tooltipBg,
+                                    color: tooltipText,
+                                    borderRadius: '8px', 
+                                    border: `1px solid ${tooltipBorder}`,
+                                }}
+                                itemStyle={{ color: tooltipText }}
+                                labelStyle={{ color: axisColor }}
+                            />
+                            <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                            
+                            <Line 
+                                name="Plano Base"
+                                type="monotone" 
+                                dataKey="baseline" 
+                                stroke={isVivo ? "#BD4AFF" : (isDark ? "#94a3b8" : "#64748b")} 
+                                strokeWidth={2} 
+                                dot={false}
+                                activeDot={{ r: 5 }}
+                            />
+
+                            <Line 
+                                name="Realizado"
+                                type="monotone" 
+                                dataKey="realized" 
+                                stroke={isVivo ? "#B2D682" : "#10b981"} 
+                                strokeWidth={3} 
+                                dot={{ r: 4 }}
+                            />
+
+                            <Line 
+                                name="Previsão"
+                                type="monotone" 
+                                dataKey="forecast" 
+                                stroke={isVivo ? "#FF9900" : "#f59e0b"} 
+                                strokeDasharray="5 5"
+                                strokeWidth={2} 
+                                dot={false}
+                            />
+                            
+                            <ReferenceLine y={chartData[0]?.total} label="" stroke={gridColor} strokeDasharray="3 3" />
+
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            );
+        };
+
+        // GanttChart Component
+        const GanttChart = ({ data, theme, singleProjectMode }) => {
+            const chartData = useMemo(() => {
+                if (data.length === 0) return [];
+
+                let rawItems = [];
+
+                if (singleProjectMode && data.length === 1) {
+                    const project = data[0];
+                    rawItems = project.tasks
+                        .filter(t => t.startDate && t.plannedEnd)
+                        .map(t => ({
+                            name: t.name,
+                            subtitle: '',
+                            start: t.startDate,
+                            end: t.plannedEnd,
+                            duration: t.duration,
+                            progress: t.progress,
+                            status: t.progress === 100 ? 'Concluído' : 'Pendente'
+                        }));
+                } else {
+                    rawItems = data
+                        .filter(p => p.startDate && p.baselineDate)
+                        .map(p => {
+                            const parts = [];
+                            if (p.squad) parts.push(p.squad);
+                            if (p.factory) parts.push(p.factory);
+                            if (p.developer) parts.push(`Dev: ${p.developer.split(' ')[0]}`);
+                            if (p.analyst) parts.push(`AF: ${p.analyst.split(' ')[0]}`);
+                            if (p.architect) parts.push(`Arq: ${p.architect.split(' ')[0]}`);
+                            
+                            return {
+                                name: p.name,
+                                subtitle: parts.join(' • '),
+                                start: p.startDate.getTime(),
+                                end: p.baselineDate.getTime(),
+                                duration: 0,
+                                progress: p.status === 'Concluído' ? 100 : 0,
+                                status: p.status
+                            };
+                        });
+                }
+
+                if (rawItems.length === 0) return [];
+
+                const minTime = Math.min(...rawItems.map(i => i.start));
+                
+                return rawItems.map(item => ({
+                    ...item,
+                    placeholder: item.start - minTime, 
+                    barSize: item.end - item.start,
+                    displayStart: format(new Date(item.start), 'dd/MM/yy'),
+                    displayEnd: format(new Date(item.end), 'dd/MM/yy')
+                })).sort((a, b) => a.start - b.start);
+
+            }, [data, singleProjectMode]);
+
+            const isVivo = theme === 'vivo';
+            const isDark = theme === 'dark' || theme === 'vivo';
+
+            const gridColor = isVivo ? '#703385' : (isDark ? '#334155' : '#e2e8f0');
+            const axisColor = isVivo ? '#BD4AFF' : (isDark ? '#94a3b8' : '#64748b');
+            const subTextColor = isVivo ? '#BD4AFF' : (isDark ? '#64748b' : '#94a3b8');
+            const tooltipBg = isVivo ? '#380054' : (isDark ? '#1e293b' : '#ffffff');
+            const tooltipText = isVivo ? '#ffffff' : (isDark ? '#f1f5f9' : '#1e293b');
+            const tooltipBorder = isVivo ? '#BD4AFF' : gridColor;
+
+            const getBarColor = (status, progress) => {
+                if (isVivo) {
+                    if (status === 'Concluído' || progress === 100) return '#B2D682';
+                    if (status === 'Atrasado') return '#FF9900';
+                    return '#BD4AFF';
+                }
+                if (status === 'Concluído' || progress === 100) return '#10b981';
+                if (status === 'Atrasado') return '#ef4444';
+                return '#3b82f6';
+            };
+
+            const currentMinTime = useMemo(() => {
+                if (chartData.length === 0) return 0;
+                return Math.min(...chartData.map(c => c.start));
+            }, [chartData]);
+
+            const CustomYAxisTick = ({ x, y, payload }) => {
+                const item = chartData[payload.index];
+                const hasSubtitle = item && item.subtitle;
+
+                return (
+                    <g transform={`translate(${x},${y})`}>
+                        <text 
+                            x={0} 
+                            y={0} 
+                            dy={hasSubtitle ? -5 : 4}
+                            textAnchor="end" 
+                            fill={axisColor} 
+                            fontSize={11} 
+                            fontWeight={500}
+                        >
+                            {payload.value.length > 20 ? payload.value.substring(0, 20) + '...' : payload.value}
+                        </text>
+                        {hasSubtitle && (
+                            <text 
+                                x={0} 
+                                y={0} 
+                                dy={8}
+                                textAnchor="end" 
+                                fill={subTextColor} 
+                                fontSize={9}
+                                opacity={0.8}
+                            >
+                                {item.subtitle.length > 30 ? item.subtitle.substring(0, 30) + '...' : item.subtitle}
+                            </text>
+                        )}
+                    </g>
+                );
+            };
+
+            if (chartData.length === 0) {
+                return (
+                    <div className={clsx(
+                        "p-6 rounded-xl shadow-sm border h-[400px] flex items-center justify-center transition-colors",
+                        isVivo ? "bg-vivo-roxo border-vivo-lilas/20 text-white/50" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400"
+                    )}>
+                        Sem dados de cronograma disponíveis para visualização.
+                    </div>
+                );
+            }
+
+            return (
+                <div className={clsx(
+                    "p-6 rounded-xl shadow-sm border h-[500px] flex flex-col transition-colors",
+                    isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                )}>
+                    <div className="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 className={clsx("text-lg font-bold", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>
+                                {singleProjectMode ? `Cronograma Detalhado: ${data[0].name}` : "Cronograma Macro Consolidado"}
+                            </h3>
+                            <p className={clsx("text-xs", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>
+                                {singleProjectMode ? "Visualização de tarefas e etapas" : "Visualização macro e equipe"}
+                            </p>
+                        </div>
+                    </div>
+
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                            data={chartData}
+                            layout="vertical"
+                            barSize={20}
+                            margin={{ top: 0, right: 30, left: 10, bottom: 20 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={gridColor} />
+                            
+                            <XAxis 
+                                type="number" 
+                                hide={false}
+                                tickFormatter={(val) => {
+                                    const date = new Date(val + currentMinTime);
+                                    return format(date, 'dd/MM');
+                                }}
+                                domain={[0, 'auto']}
+                                tick={{ fontSize: 11, fill: axisColor }}
+                                axisLine={false}
+                                tickLine={false}
+                            />
+
+                            <YAxis 
+                                type="category" 
+                                dataKey="name" 
+                                width={160}
+                                tick={<CustomYAxisTick />}
+                                interval={0}
+                            />
+
+                            <Tooltip 
+                                cursor={{ fill: 'transparent' }}
+                                content={({ active, payload }) => {
+                                    if (active && payload && payload.length) {
+                                        const data = payload[1]?.payload || payload[0]?.payload; 
+                                        if (!data) return null;
+                                        return (
+                                            <div style={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: '8px', padding: '10px' }}>
+                                                <p style={{ color: tooltipText, fontWeight: 'bold', marginBottom: '4px' }}>{data.name}</p>
+                                                {data.subtitle && (
+                                                    <p style={{ color: tooltipText, fontSize: '11px', opacity: 0.8, marginBottom: '4px' }}>{data.subtitle}</p>
+                                                )}
+                                                <p style={{ color: tooltipText, fontSize: '12px' }}>Início: {data.displayStart}</p>
+                                                <p style={{ color: tooltipText, fontSize: '12px' }}>Fim: {data.displayEnd}</p>
+                                                <p style={{ color: tooltipText, fontSize: '12px' }}>Status: {data.status}</p>
+                                            </div>
+                                        );
+                                    }
+                                    return null;
+                                }}
+                            />
+
+                            <Bar dataKey="placeholder" stackId="a" fill="transparent" />
+
+                            <Bar dataKey="barSize" stackId="a" radius={[4, 4, 4, 4]}>
+                                {chartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={getBarColor(entry.status, entry.progress)} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            );
+        };
+
+        // AverageDurationChart Component
+        const AverageDurationChart = ({ data, theme }) => {
+            const chartData = useMemo(() => {
+                if (data.length === 0) return [];
+
+                const durationSums = {};
+                const durationCounts = {};
+
+                const standardStages = ['Discovery', 'Desenvolvimento', 'Homologação', 'Implantação', 'Delivery'];
+
+                data.forEach(project => {
+                    Object.entries(project.stageDurations || {}).forEach(([stage, val]) => {
+                        const days = val;
+                        if (days > 0) {
+                            durationSums[stage] = (durationSums[stage] || 0) + days;
+                            durationCounts[stage] = (durationCounts[stage] || 0) + 1;
+                        }
+                    });
+                });
+
+                const result = Object.keys(durationSums).map(stage => ({
+                    stage,
+                    avgDays: Math.round(durationSums[stage] / durationCounts[stage])
+                }));
+
+                result.sort((a, b) => {
+                    const idxA = standardStages.indexOf(a.stage);
+                    const idxB = standardStages.indexOf(b.stage);
+                    return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+                });
+
+                return result;
+            }, [data]);
+
+            const isVivo = theme === 'vivo';
+            const isDark = theme === 'dark' || theme === 'vivo';
+
+            const gridColor = isVivo ? '#703385' : (isDark ? '#334155' : '#e2e8f0');
+            const axisColor = isVivo ? '#BD4AFF' : (isDark ? '#94a3b8' : '#64748b');
+            const tooltipBg = isVivo ? '#380054' : (isDark ? '#1e293b' : '#ffffff');
+            const tooltipText = isVivo ? '#ffffff' : (isDark ? '#f1f5f9' : '#1e293b');
+            const tooltipBorder = isVivo ? '#BD4AFF' : gridColor;
+            const labelColor = isVivo ? '#BD4AFF' : (isDark ? '#e2e8f0' : '#475569');
+
+            return (
+                <div className={clsx(
+                    "p-6 rounded-xl shadow-sm border h-[300px] transition-colors",
+                    isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                )}>
+                    <div className="mb-4">
+                        <h3 className={clsx("text-lg font-bold", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>Duração Média por Etapa</h3>
+                        <p className={clsx("text-xs", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Média em dias calculada via cronograma.</p>
+                    </div>
+
+                    <ResponsiveContainer width="100%" height="80%">
+                        <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 40, bottom: 5, left: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={gridColor} />
+                            <XAxis type="number" hide />
+                            <YAxis 
+                                dataKey="stage" 
+                                type="category" 
+                                width={100} 
+                                tick={{ fontSize: 11, fill: axisColor }} 
+                                axisLine={false}
+                                tickLine={false}
+                            />
+                            <Tooltip 
+                                cursor={{ fill: isVivo ? '#4a1d63' : (isDark ? '#334155' : '#f1f5f9') }}
+                                contentStyle={{ 
+                                    backgroundColor: tooltipBg,
+                                    color: tooltipText,
+                                    borderRadius: '8px', 
+                                    border: `1px solid ${tooltipBorder}`,
+                                }}
+                                itemStyle={{ color: tooltipText }}
+                                formatter={(value) => [`${value} dias`, 'Média']}
+                            />
+                            <Bar dataKey="avgDays" radius={[0, 4, 4, 0]} barSize={20}>
+                                {chartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={isVivo ? '#EB3C7D' : (isDark ? '#0ea5e9' : '#0284c7')} />
+                                ))}
+                                <LabelList 
+                                    dataKey="avgDays" 
+                                    position="right" 
+                                    fill={labelColor} 
+                                    fontSize={12} 
+                                    fontWeight="bold"
+                                    formatter={(val) => `${val} d`}
+                                />
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+            );
+        };
+
+        // RoadmapTimeline Component
+        const RoadmapTimeline = ({ data, theme }) => {
+            const sortedData = [...data].sort((a, b) => {
+                const dateA = a.actualDate || a.baselineDate || new Date(2099, 0, 1);
+                const dateB = b.actualDate || b.baselineDate || new Date(2099, 0, 1);
+                return dateA.getTime() - dateB.getTime();
+            });
+
+            const displayData = sortedData.slice(0, 15);
+
+            const isVivo = theme === 'vivo';
+
+            const getStatusColor = (status) => {
+                if (isVivo) {
+                    switch (status) {
+                        case 'Concluído': return 'bg-vivo-menta';
+                        case 'Em Andamento': return 'bg-vivo-lilas';
+                        case 'Atrasado': return 'bg-vivo-laranja';
+                        default: return 'bg-white/30';
+                    }
+                }
+                switch (status) {
+                    case 'Concluído': return 'bg-emerald-500';
+                    case 'Em Andamento': return 'bg-blue-500';
+                    case 'Atrasado': return 'bg-red-500';
+                    default: return 'bg-slate-300 dark:bg-slate-600';
+                }
+            };
+
+            const getBadgeColor = (status) => {
+                if (isVivo) {
+                    switch(status) {
+                        case 'Concluído': return 'bg-vivo-menta/20 text-vivo-menta';
+                        case 'Atrasado': return 'bg-vivo-laranja/20 text-vivo-laranja';
+                        case 'Em Andamento': return 'bg-vivo-lilas/20 text-vivo-lilas';
+                        default: return 'bg-white/10 text-white';
+                    }
+                }
+                switch(status) {
+                    case 'Concluído': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400';
+                    case 'Atrasado': return 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400';
+                    case 'Em Andamento': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400';
+                    default: return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400';
+                }
+            };
+
+            return (
+                <div className={clsx(
+                    "p-6 rounded-xl shadow-sm border h-[400px] overflow-hidden flex flex-col transition-colors",
+                    isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                )}>
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className={clsx("text-lg font-bold", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>Roadmap Executivo</h3>
+                        <span className={clsx("text-xs", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>Próximos entregáveis (Top 15)</span>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-4">
+                            {displayData.map((project) => (
+                                <div key={project.id} className="flex items-center gap-4 group">
+                                    <div className={clsx(
+                                        "w-16 flex flex-col items-center justify-center rounded-lg p-2 shrink-0 border",
+                                        isVivo ? "bg-white/5 border-vivo-lilas/20" : "bg-slate-50 dark:bg-slate-700/50 border-slate-100 dark:border-slate-700"
+                                    )}>
+                                        <span className={clsx("text-xs font-bold uppercase", isVivo ? "text-vivo-lilas" : "text-slate-400 dark:text-slate-500")}>
+                                            {project.baselineDate ? format(project.baselineDate, 'MMM') : '-'}
+                                        </span>
+                                        <span className={clsx("text-lg font-bold leading-none", isVivo ? "text-white" : "text-slate-700 dark:text-slate-200")}>
+                                            {project.baselineDate ? format(project.baselineDate, 'dd') : '-'}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex-1 relative">
+                                        <div className="flex justify-between items-baseline mb-1">
+                                            <span className={clsx("font-semibold text-sm truncate max-w-[200px] md:max-w-xs", isVivo ? "text-white" : "text-slate-800 dark:text-slate-200")} title={project.name}>
+                                                {project.name}
+                                            </span>
+                                            <span className={clsx("text-[10px] px-2 py-0.5 rounded-full font-medium uppercase tracking-wide", getBadgeColor(project.status))}>
+                                                {project.status}
+                                            </span>
+                                        </div>
+                                        
+                                        <div className={clsx("h-2 w-full rounded-full overflow-hidden", isVivo ? "bg-white/10" : "bg-slate-100 dark:bg-slate-700")}>
+                                            <div 
+                                                className={clsx("h-full rounded-full", getStatusColor(project.status))}
+                                                style={{ width: project.status === 'Concluído' ? '100%' : '50%' }}
+                                            ></div>
+                                        </div>
+                                        
+                                        <div className="flex justify-between mt-1">
+                                            <span className={clsx("text-[10px]", isVivo ? "text-white/40" : "text-slate-400 dark:text-slate-500")}>
+                                                Base: {project.baselineDate ? format(project.baselineDate, 'dd/MM/yy') : 'N/A'}
+                                            </span>
+                                            {project.actualDate && (
+                                                <span className={clsx("text-[10px] font-medium", isVivo ? "text-white/60" : "text-slate-500 dark:text-slate-400")}>
+                                                    Real: {format(project.actualDate, 'dd/MM/yy')}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // DataTable Component
+        const DataTable = ({ data, theme }) => {
+            const isVivo = theme === 'vivo';
+
+            const getStatusBadge = (status) => {
+                if (isVivo) {
+                    switch (status) {
+                        case 'Concluído': return 'bg-vivo-menta text-vivo-roxo';
+                        case 'Atrasado': return 'bg-vivo-laranja text-vivo-roxo';
+                        case 'Em Andamento': return 'bg-vivo-lilas text-white';
+                        default: return 'bg-white/20 text-white';
+                    }
+                }
+                return clsx(
+                    "px-2 py-1 rounded-full text-xs font-semibold",
+                    status === 'Concluído' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400' :
+                    status === 'Atrasado' ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400' :
+                    status === 'Em Andamento' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400' :
+                    'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                );
+            };
+
+            return (
+                <div className={clsx(
+                    "rounded-xl shadow-sm border overflow-hidden transition-colors",
+                    isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                )}>
+                    <div className={clsx("p-6 border-b", isVivo ? "border-vivo-lilas/20" : "border-slate-100 dark:border-slate-700")}>
+                        <h3 className={clsx("text-lg font-bold", isVivo ? "text-white" : "text-slate-800 dark:text-white")}>Detalhamento</h3>
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                        <table className={clsx("w-full text-left text-sm", isVivo ? "text-white/80" : "text-slate-600 dark:text-slate-400")}>
+                            <thead className={clsx("font-semibold uppercase text-xs tracking-wider", isVivo ? "bg-vivo-lilas/10 text-vivo-lilas" : "bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400")}>
+                                <tr>
+                                    <th className="px-6 py-4">Projeto</th>
+                                    <th className="px-6 py-4">Descrição</th>
+                                    <th className="px-6 py-4">Equipe / Fábrica</th>
+                                    <th className="px-6 py-4">Data Base</th>
+                                    <th className="px-6 py-4">Data Real</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4 text-right">Saving (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody className={clsx("divide-y", isVivo ? "divide-vivo-lilas/10" : "divide-slate-100 dark:divide-slate-700")}>
+                                {data.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={7} className="px-6 py-8 text-center opacity-50">Nenhum dado encontrado com os filtros atuais.</td>
+                                    </tr>
+                                ) : (
+                                    data.map((project) => (
+                                        <tr key={project.id} className={clsx("transition-colors", isVivo ? "hover:bg-white/5" : "hover:bg-slate-50 dark:hover:bg-slate-700/30")}>
+                                            <td className={clsx("px-6 py-4 font-medium", isVivo ? "text-white" : "text-slate-800 dark:text-slate-200")}>
+                                                {project.name}
+                                            </td>
+                                            <td className="px-6 py-4 max-w-xs">
+                                                {project.description ? (
+                                                    <span className="text-xs opacity-80 line-clamp-2" title={project.description}>
+                                                        {project.description}
+                                                    </span>
+                                                ) : (
+                                                    <span className="opacity-30 text-xs">-</span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-1 text-xs">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        {project.factory && (
+                                                            <span className={clsx("font-semibold", isVivo ? "text-vivo-lilas" : "text-brand-600 dark:text-brand-400")}>
+                                                                {project.factory}
+                                                            </span>
+                                                        )}
+                                                        {project.squad && (
+                                                            <span className={clsx("px-1.5 py-0.5 rounded text-[10px] uppercase font-bold", isVivo ? "bg-vivo-rosa/20 text-vivo-rosa" : "bg-slate-200 text-slate-700 dark:bg-slate-600 dark:text-slate-300")}>
+                                                                {project.squad}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div className="flex flex-col gap-0.5 opacity-80">
+                                                        {project.developer && (
+                                                            <div className="flex gap-1">
+                                                                <span className={clsx("font-bold w-8", isVivo ? "text-vivo-menta" : "text-slate-500")}>Dev:</span>
+                                                                <span>{project.developer}</span>
+                                                            </div>
+                                                        )}
+                                                        {project.analyst && (
+                                                            <div className="flex gap-1">
+                                                                <span className={clsx("font-bold w-8", isVivo ? "text-vivo-menta" : "text-slate-500")}>AF:</span>
+                                                                <span>{project.analyst}</span>
+                                                            </div>
+                                                        )}
+                                                        {project.architect && (
+                                                            <div className="flex gap-1">
+                                                                <span className={clsx("font-bold w-8", isVivo ? "text-vivo-menta" : "text-slate-500")}>Arq:</span>
+                                                                <span>{project.architect}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {(!project.factory && !project.squad && !project.developer && !project.analyst && !project.architect) && (
+                                                        <span className="opacity-30">-</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {project.baselineDate ? format(project.baselineDate, 'dd/MM/yyyy') : '-'}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {project.actualDate ? format(project.actualDate, 'dd/MM/yyyy') : '-'}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={clsx("px-2 py-1 rounded-full text-xs font-semibold", getStatusBadge(project.status))}>
+                                                    {project.status}
+                                                </span>
+                                            </td>
+                                            <td className={clsx("px-6 py-4 text-right font-mono", isVivo ? "text-white" : "text-slate-700 dark:text-slate-300")}>
+                                                {project.saving.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className={clsx("px-6 py-3 border-t text-xs text-right", isVivo ? "bg-white/5 border-vivo-lilas/20 text-white/50" : "bg-slate-50 dark:bg-slate-700/50 border-slate-100 dark:border-slate-700 text-slate-400")}>
+                        Exibindo {data.length} registros
+                    </div>
+                </div>
+            );
+        };
+
+        // Dashboard Component
+        const Dashboard = ({ data, onReset, onAppendData, theme, toggleTheme }) => {
+            const [filters, setFilters] = useState({
+                searchTerm: '',
+                statusFilter: 'Todos',
+                projectFilter: 'Todos',
+                squadFilter: 'Todos'
+            });
+
+            const [isImporting, setIsImporting] = useState(false);
+            const fileInputRef = useRef(null);
+
+            const uniqueSquads = useMemo(() => {
+                const squads = new Set();
+                data.forEach(p => {
+                    if (p.squad && p.squad.trim() !== '') {
+                        squads.add(p.squad.toUpperCase());
+                    }
+                });
+                return Array.from(squads).sort();
+            }, [data]);
+
+            const uniqueProjects = useMemo(() => {
+                let projects = data;
+                if (filters.squadFilter !== 'Todos') {
+                    projects = projects.filter(p => p.squad?.toUpperCase() === filters.squadFilter);
+                }
+                return Array.from(new Set(projects.map(p => p.name))).sort();
+            }, [data, filters.squadFilter]);
+
+            const filteredData = useMemo(() => {
+                return data.filter(p => {
+                    const matchesSearch = p.name.toLowerCase().includes(filters.searchTerm.toLowerCase());
+                    const matchesStatus = filters.statusFilter === 'Todos' || p.status === filters.statusFilter;
+                    const matchesProject = filters.projectFilter === 'Todos' || p.name === filters.projectFilter;
+                    
+                    const pSquad = p.squad ? p.squad.toUpperCase() : '';
+                    const matchesSquad = filters.squadFilter === 'Todos' || pSquad === filters.squadFilter;
+
+                    return matchesSearch && matchesStatus && matchesProject && matchesSquad;
+                });
+            }, [data, filters]);
+
+            const metrics = useMemo(() => {
+                const totalSaving = filteredData.reduce((acc, p) => acc + p.saving, 0);
+                const totalProjects = filteredData.length;
+                
+                const statusDistribution = {};
+                filteredData.forEach(p => {
+                    statusDistribution[p.status] = (statusDistribution[p.status] || 0) + 1;
+                });
+
+                const completed = statusDistribution['Concluído'] || 0;
+                const completionRate = totalProjects > 0 ? (completed / totalProjects) * 100 : 0;
+
+                return {
+                    totalSaving,
+                    totalProjects,
+                    statusDistribution,
+                    completionRate,
+                    avgDelayDays: 0
+                };
+            }, [filteredData]);
+
+            const uniqueStatuses = Array.from(new Set(data.map(d => d.status)));
+
+            const isVivo = theme === 'vivo';
+
+            const handleAddFileClick = () => {
+                fileInputRef.current?.click();
+            };
+
+            const handleFileChange = async (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    setIsImporting(true);
+                    try {
+                        const files = Array.from(e.target.files);
+                        const promises = files.map(f => parseExcelFile(f));
+                        const results = await Promise.all(promises);
+                        const flatData = results.flat();
+                        if (flatData.length > 0) {
+                            onAppendData(flatData);
+                        }
+                    } catch (error) {
+                        console.error("Erro ao importar mais arquivos", error);
+                        alert("Erro ao ler arquivos. Verifique se são válidos.");
+                    } finally {
+                        setIsImporting(false);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                    }
+                }
+            };
+
+            const isSingleProject = filters.projectFilter !== 'Todos' && filteredData.length === 1;
+
+            return (
+                <div className={clsx(
+                    "min-h-screen pb-20 transition-colors duration-300",
+                    isVivo ? "bg-vivo-roxo-escuro text-white" : "bg-slate-100/50 dark:bg-slate-900"
+                )}>
+                    <input 
+                        type="file" 
+                        multiple 
+                        accept=".xlsx" 
+                        ref={fileInputRef} 
+                        className="hidden" 
+                        onChange={handleFileChange}
+                    />
+
+                    <header className={clsx(
+                        "border-b sticky top-0 z-30 shadow-sm transition-colors duration-300",
+                        isVivo ? "bg-vivo-roxo border-vivo-lilas/20" : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                    )}>
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className={clsx(
+                                    "w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg overflow-hidden",
+                                    isVivo ? "bg-white" : "bg-brand-600 text-white"
+                                )}>
+                                    {isVivo ? (
+                                        <img 
+                                            src="https://logodownload.org/wp-content/uploads/2014/02/vivo-logo-0.png" 
+                                            alt="Vivo" 
+                                            className="w-full h-full object-contain p-1"
+                                        />
+                                    ) : (
+                                        'F'
+                                    )}
+                                </div>
+                                <h1 className={clsx(
+                                    "text-xl font-bold tracking-tight",
+                                    isVivo ? "text-white" : "text-slate-800 dark:text-white"
+                                )}>
+                                    Dashboard <span className={clsx("font-normal", isVivo ? "text-vivo-lilas" : "text-slate-400 dark:text-slate-500")}>Executivo</span>
+                                </h1>
+                            </div>
+                            
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={toggleTheme}
+                                    className={clsx(
+                                        "p-2 rounded-full transition-colors flex items-center gap-2",
+                                        isVivo 
+                                            ? "text-vivo-lilas hover:bg-vivo-lilas/10" 
+                                            : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
+                                    )}
+                                    title="Alternar Tema"
+                                >
+                                    {theme === 'light' && <Sun className="w-5 h-5" />}
+                                    {theme === 'dark' && <Moon className="w-5 h-5" />}
+                                    {theme === 'vivo' && <Sparkles className="w-5 h-5" />}
+                                </button>
+
+                                <div className={clsx("h-6 w-px", isVivo ? "bg-vivo-lilas/20" : "bg-slate-200 dark:bg-slate-700")}></div>
+
+                                <button 
+                                    onClick={handleAddFileClick}
+                                    disabled={isImporting}
+                                    className={clsx(
+                                        "flex items-center gap-2 text-sm transition-colors font-medium",
+                                        isVivo ? "text-vivo-menta hover:text-white" : "text-brand-600 dark:text-brand-400 hover:text-brand-700"
+                                    )}
+                                >
+                                    {isImporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <PlusCircle className="w-4 h-4" />}
+                                    <span className="hidden sm:inline">Adicionar Arquivo</span>
+                                </button>
+
+                                <button 
+                                    onClick={onReset}
+                                    className={clsx(
+                                        "flex items-center gap-2 text-sm transition-colors",
+                                        isVivo ? "text-white/50 hover:text-white" : "text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400"
+                                    )}
+                                    title="Limpar tudo e começar de novo"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                        
+                        <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto no-scrollbar">
+                            <button
+                                onClick={() => setFilters(prev => ({ ...prev, squadFilter: 'Todos', projectFilter: 'Todos' }))}
+                                className={clsx(
+                                    "pb-3 px-4 flex items-center gap-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                                    filters.squadFilter === 'Todos'
+                                        ? (isVivo ? "border-vivo-lilas text-vivo-lilas" : "border-brand-600 text-brand-600 dark:text-brand-400")
+                                        : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 hover:border-gray-300"
+                                )}
+                            >
+                                <LayoutDashboard className="w-4 h-4" />
+                                Visão Geral
+                            </button>
+                            {uniqueSquads.map(squad => (
+                                <button
+                                    key={squad}
+                                    onClick={() => setFilters(prev => ({ ...prev, squadFilter: squad, projectFilter: 'Todos' }))}
+                                    className={clsx(
+                                        "pb-3 px-4 flex items-center gap-2 text-sm font-medium border-b-2 transition-colors whitespace-nowrap",
+                                        filters.squadFilter === squad
+                                            ? (isVivo ? "border-vivo-lilas text-vivo-lilas" : "border-brand-600 text-brand-600 dark:text-brand-400")
+                                            : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 hover:border-gray-300"
+                                    )}
+                                >
+                                    <Users className="w-4 h-4" />
+                                    {squad}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className={clsx(
+                            "flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center p-4 rounded-xl shadow-sm border transition-colors duration-300",
+                            isVivo 
+                            ? "bg-vivo-roxo border-vivo-lilas/30 shadow-lg shadow-vivo-roxo/50" 
+                            : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                        )}>
+                            
+                            <div className="flex flex-col md:flex-row gap-4 w-full xl:w-auto">
+                                
+                                <div className="relative w-full md:w-64">
+                                    <Search className={clsx("absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4", isVivo ? "text-vivo-lilas" : "text-slate-400")} />
+                                    <input 
+                                        type="text" 
+                                        placeholder="Buscar texto..." 
+                                        className={clsx(
+                                            "w-full pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 transition-all",
+                                            isVivo 
+                                                ? "bg-vivo-roxo-escuro border-transparent text-white placeholder:text-white/40 focus:ring-vivo-lilas"
+                                                : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:ring-brand-500 placeholder:text-slate-400"
+                                        )}
+                                        value={filters.searchTerm}
+                                        onChange={(e) => setFilters(prev => ({ ...prev, searchTerm: e.target.value }))}
+                                    />
+                                </div>
+
+                                <div className="relative w-full md:w-64">
+                                    <FolderOpen className={clsx("absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4", isVivo ? "text-vivo-lilas" : "text-slate-400")} />
+                                    <select
+                                        value={filters.projectFilter}
+                                        onChange={(e) => setFilters(prev => ({ ...prev, projectFilter: e.target.value }))}
+                                        className={clsx(
+                                            "w-full pl-10 pr-8 py-2 rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 transition-all cursor-pointer",
+                                            isVivo
+                                                ? "bg-vivo-roxo-escuro border-transparent text-white focus:ring-vivo-lilas"
+                                                : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 focus:ring-brand-500"
+                                        )}
+                                    >
+                                        <option value="Todos">
+                                            {filters.squadFilter === 'Todos' ? 'Todos os Projetos' : `Projetos de ${filters.squadFilter}`}
+                                        </option>
+                                        {uniqueProjects.map(name => (
+                                            <option key={name} value={name}>{name}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                        <svg className={clsx("w-4 h-4", isVivo ? "text-vivo-lilas" : "text-slate-400")} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div className="flex items-center gap-3 w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0">
+                                <div className={clsx("flex items-center gap-2 text-sm whitespace-nowrap", isVivo ? "text-vivo-lilas" : "text-slate-500 dark:text-slate-400")}>
+                                    <Filter className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Status:</span>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setFilters(prev => ({ ...prev, statusFilter: 'Todos' }))}
+                                        className={clsx(
+                                            "px-3 py-1.5 rounded-full text-xs font-medium transition-colors border whitespace-nowrap",
+                                            isVivo 
+                                                ? (filters.statusFilter === 'Todos' ? "bg-vivo-lilas text-white border-vivo-lilas" : "bg-transparent text-white border-vivo-lilas/30 hover:border-vivo-lilas")
+                                                : (filters.statusFilter === 'Todos' ? "bg-slate-800 text-white border-slate-800 dark:bg-slate-100 dark:text-slate-900" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600")
+                                        )}
+                                    >
+                                        Todos
+                                    </button>
+                                    {uniqueStatuses.map(status => (
+                                        <button
+                                            key={status}
+                                            onClick={() => setFilters(prev => ({ ...prev, statusFilter: status }))}
+                                            className={clsx(
+                                                "px-3 py-1.5 rounded-full text-xs font-medium transition-colors border whitespace-nowrap",
+                                                isVivo 
+                                                ? (filters.statusFilter === status ? "bg-vivo-lilas text-white border-vivo-lilas" : "bg-transparent text-white border-vivo-lilas/30 hover:border-vivo-lilas")
+                                                : (filters.statusFilter === status ? "bg-brand-500 text-white border-brand-500" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600")
+                                            )}
+                                        >
+                                            {status}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <KPICards metrics={metrics} theme={theme} />
+
+                        <GanttChart 
+                            data={filteredData} 
+                            theme={theme} 
+                            singleProjectMode={isSingleProject}
+                        />
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div className="lg:col-span-2">
+                                <BurnupChart data={filteredData} theme={theme} />
+                            </div>
+                            <div className="lg:col-span-1">
+                                <AverageDurationChart data={filteredData} theme={theme} />
+                            </div>
+                        </div>
+
+                        {!isSingleProject && <RoadmapTimeline data={filteredData} theme={theme} />}
+
+                        <DataTable data={filteredData} theme={theme} />
+                    </main>
+                </div>
+            );
+        };
+
+        // App Component
+        const App = () => {
+            const [data, setData] = useState(null);
+            const [theme, setTheme] = useState('light');
+
+            useEffect(() => {
+                document.documentElement.classList.remove('dark', 'vivo');
+                
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else if (theme === 'vivo') {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.add('vivo');
+                    document.body.style.backgroundColor = '#180024';
+                } else {
+                    document.body.style.backgroundColor = '';
+                }
+            }, [theme]);
+
+            const cycleTheme = () => {
+                setTheme(current => {
+                    if (current === 'light') return 'dark';
+                    if (current === 'dark') return 'vivo';
+                    return 'light';
+                });
+            };
+
+            const handleAppendData = (newData) => {
+                setData(prev => {
+                    if (!prev) return newData;
+                    const existingIds = new Set(prev.map(p => p.id));
+                    const uniqueNew = newData.filter(p => !existingIds.has(p.id));
+                    return [...prev, ...uniqueNew];
+                });
+            };
+
+            return (
+                <div className={clsx(
+                    "min-h-screen font-sans transition-colors duration-300",
+                    theme === 'vivo' ? 'bg-vivo-roxo-escuro text-white' : 'bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100'
+                )}>
+                    {!data ? (
+                        <FileUpload 
+                            onDataLoaded={setData} 
+                            theme={theme}
+                            toggleTheme={cycleTheme}
+                        />
+                    ) : (
+                        <Dashboard 
+                            data={data} 
+                            onReset={() => setData(null)}
+                            onAppendData={handleAppendData}
+                            theme={theme}
+                            toggleTheme={cycleTheme}
+                        />
+                    )}
+                </div>
+            );
+        };
+
+        // Render - usar ReactDOM.render para compatibilidade
+        const rootElement = document.getElementById('root');
+        if (ReactDOM.createRoot) {
+            const root = ReactDOM.createRoot(rootElement);
+            root.render(React.createElement(App));
+        } else {
+            ReactDOM.render(React.createElement(App), rootElement);
+        }

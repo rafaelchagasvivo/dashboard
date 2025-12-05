@@ -7,6 +7,13 @@ export default {
     theme: {
         extend: {
             colors: {
+                'vivo-roxo-escuro': '#1a0033',
+                'vivo-roxo': '#380054',
+                'vivo-lilas': '#BD4AFF',
+                'vivo-menta': '#B2D682',
+                'vivo-laranja': '#FF9900',
+                'vivo-rosa': '#EB3C7D',
+                'brand-600': '#5a3e8d',
                 vivo: {
                     purple: '#660099',
                     dark: '#180024',

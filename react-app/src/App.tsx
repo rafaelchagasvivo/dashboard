@@ -1,25 +1,38 @@
 import { useState, useMemo } from 'react';
+
 import { Layout } from './components/Layout';
 import { UploadZone } from './components/UploadZone';
 import { KPICards } from './components/KPICards';
-import { BurnupChart, DurationChart, GanttChart } from './components/Charts';
+import { BurnupChart } from './components/BurnupChart';
+import { GanttChart } from './components/GanttChart';
+import { AverageDurationChart } from './components/AverageDurationChart';
+
 import { ProjectTable } from './components/ProjectTable';
 import { ExcelParser } from './utils/ExcelParser';
 import { AnalyticsEngine } from './utils/AnalyticsEngine';
-import type { Project } from './types';
+import type { ProjectData, Theme } from './types';
 
 function App() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectData[]>([]);
   const [selectedSquad, setSelectedSquad] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [selectedFactory, setSelectedFactory] = useState<string | null>(null);
+  const [selectedTechnology, setSelectedTechnology] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [theme, setTheme] = useState<Theme>('vivo');
+
+  const toggleTheme = () => {
+    const themes: Theme[] = ['light', 'dark', 'vivo'];
+    const nextTheme = themes[(themes.indexOf(theme) + 1) % themes.length];
+    setTheme(nextTheme);
+  };
 
   // Handle File Upload
   const handleFiles = async (files: File[]) => {
     setIsLoading(true);
     try {
-      const newProjects: Project[] = [];
+      const newProjects: ProjectData[] = [];
       for (const file of files) {
         const parsed = await ExcelParser.parseFile(file);
         newProjects.push(...parsed);
@@ -40,23 +53,57 @@ function App() {
 
   // Derived State
   const squads = useMemo(() => {
-    const s = new Set(projects.map(p => p.team.squad).filter(s => s !== 'N/A'));
+    const s = new Set(projects.map(p => p.squad).filter((s): s is string => !!s && s !== 'N/A'));
     return Array.from(s).sort();
   }, [projects]);
 
+  const factories = useMemo(() => {
+    let filtered = projects;
+    if (selectedSquad) {
+      filtered = filtered.filter(p => p.squad === selectedSquad);
+    }
+    const s = new Set(filtered.map(p => p.factory).filter((s): s is string => !!s && s !== 'N/A'));
+    return Array.from(s).sort();
+  }, [projects, selectedSquad]);
+
+  const technologies = useMemo(() => {
+    let filtered = projects;
+    if (selectedSquad) {
+      filtered = filtered.filter(p => p.squad === selectedSquad);
+    }
+    const s = new Set(filtered.map(p => p.technology).filter((s): s is string => !!s && s !== 'N/A'));
+    return Array.from(s).sort();
+  }, [projects, selectedSquad]);
+
   const filteredProjects = useMemo(() => {
     return projects.filter(p => {
-      const matchesSquad = selectedSquad ? p.team.squad === selectedSquad : true;
+      // Exclude burnup-only projects from the table
+      if (p.burnupData) return false;
+
+      const matchesSquad = selectedSquad ? p.squad === selectedSquad : true;
+      const matchesFactory = selectedFactory ? p.factory === selectedFactory : true;
+      const matchesTechnology = selectedTechnology.length > 0
+        ? (p.technology && selectedTechnology.includes(p.technology))
+        : true;
       const matchesProject = selectedProject ? p.id === selectedProject : true;
-      const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.team.squad.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesSquad && matchesProject && matchesSearch;
+      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (p.squad && p.squad.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesSquad && matchesProject && matchesSearch && matchesFactory && matchesTechnology;
     });
-  }, [projects, selectedSquad, selectedProject, searchTerm]);
+  }, [projects, selectedSquad, selectedProject, searchTerm, selectedFactory, selectedTechnology]);
+
+  // Filter available projects for dropdown based on squad
+  const availableProjects = useMemo(() => {
+    let filtered = projects;
+    if (selectedSquad) {
+      filtered = filtered.filter(p => p.squad === selectedSquad);
+    }
+    return filtered.map(p => ({ id: p.id, name: p.name }));
+  }, [projects, selectedSquad]);
 
   const kpis = useMemo(() => AnalyticsEngine.calculateKPIs(filteredProjects), [filteredProjects]);
 
-  const singleProject = filteredProjects.length === 1 ? filteredProjects[0] : null;
+  const isSingleProject = filteredProjects.length === 1;
 
   return (
     <Layout
@@ -66,9 +113,17 @@ function App() {
       onUpload={() => document.getElementById('hidden-file-input')?.click()}
       searchTerm={searchTerm}
       onSearch={setSearchTerm}
-      projects={projects.map(p => ({ id: p.id, title: p.title }))}
+      projects={availableProjects}
       selectedProject={selectedProject}
       onSelectProject={setSelectedProject}
+      theme={theme}
+      toggleTheme={toggleTheme}
+      factories={factories}
+      selectedFactory={selectedFactory}
+      onSelectFactory={setSelectedFactory}
+      technologies={technologies}
+      selectedTechnology={selectedTechnology}
+      onSelectTechnology={setSelectedTechnology}
     >
       <input
         id="hidden-file-input"
@@ -85,33 +140,19 @@ function App() {
           {isLoading && <p className="text-center mt-4 text-vivo-purple animate-pulse">Processando...</p>}
         </div>
       ) : (
-        <div className="animate-fade-in">
-          <KPICards kpis={kpis} />
-
-          {/* Gantt Chart (Full Width) */}
-          <div className="mb-8">
-            <GanttChart projects={filteredProjects} />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div className="h-[400px]">
-              <h3 className="text-lg font-bold mb-4">Burnup de Entregas</h3>
-              {singleProject ? (
-                <BurnupChart project={singleProject} />
-              ) : (
-                <div className="bg-white dark:bg-card-bg border border-border-color p-8 rounded-xl h-full flex flex-col items-center justify-center text-center shadow-sm">
-                  <p className="text-text-primary/60 mb-2">Selecione um único projeto para ver o Burnup</p>
-                </div>
-              )}
+        <div className="animate-fade-in space-y-6">
+          <KPICards metrics={kpis} theme={theme} />
+          <GanttChart data={filteredProjects} theme={theme} singleProjectMode={isSingleProject} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <BurnupChart data={filteredProjects} theme={theme} />
             </div>
-            <div className="h-[400px]">
-              <h3 className="text-lg font-bold mb-4">Duração Média por Etapa</h3>
-              <DurationChart projects={filteredProjects} />
+            <div className="lg:col-span-1">
+              <AverageDurationChart data={filteredProjects} theme={theme} />
             </div>
           </div>
 
-          <h2 className="text-xl font-bold mb-4">Detalhamento</h2>
-          <ProjectTable projects={filteredProjects} />
+          <ProjectTable projects={filteredProjects} theme={theme} />
         </div>
       )}
     </Layout>
@@ -119,3 +160,4 @@ function App() {
 }
 
 export default App;
+
